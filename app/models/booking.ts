@@ -46,9 +46,9 @@ export default class Booking extends BaseModel {
   @Field()
   declare updatedAt: DateTime
   
-  @belongsTo(() => User, { foreignKey: 'id' })
+  @belongsTo(() => User, { foreignKey: 'id_user' })
   declare user: BelongsTo<typeof User>
 
-  @belongsTo(() => Fasilitas, { foreignKey: 'id' })
+  @belongsTo(() => Fasilitas, { foreignKey: 'id_fasilitas' })
   declare fasilitas: BelongsTo<typeof Fasilitas>
 }

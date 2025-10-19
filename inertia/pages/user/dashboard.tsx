@@ -1,48 +1,106 @@
-import React, { useEffect, useState } from 'react'
-import UserLayout from '../../app/Layouts/userlayout'
+import AdminLayout from '../../app/Layouts/adminlayout' // atau layout khusus user jika ingin beda
+import { Calendar } from 'lucide-react'
 
-interface Booking {
-    id: number
-    id_user: number
-    id_fasilitas: number
-    no_ruang: string
-    status: string
+// interface Booking {
+//     id: number
+//     status: string
+//     tgl_pinjam: string
+//     tgl_kembali: string
+//     fasilitas?: {
+//         id: number
+//         nama_fasilitas: string
+//         no_ruang: string
+//     }
+// }
+
+// interface Props {
+//     user: { id: number; username: string }
+//     bookings: Booking[]
+//     fasilitas: any[]
+// }
+
+export default function Dashboard({ user, bookings, fasilitas }: {user: { id: number; username: string }, bookings: Booking[], fasilitas: any[]}) {
+    return (
+        <AdminLayout>
+            <div>
+                <h1 className="text-2xl font-bold mb-4">Selamat datang, {user.username} 👋</h1>
+                <p className="text-gray-600 mb-8">
+                    Berikut adalah ringkasan aktivitas peminjaman fasilitas Anda.
+                </p>
+
+                {/* Statistik Booking */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <StatCard title="Total Booking" value={bookings.length} />
+                    <StatCard title="Fasilitas Kampus" value={fasilitas.length} />
+                    <StatCard
+                        title="Booking Aktif"
+                        value={bookings.filter((b) => b.status === 'Disetujui').length}
+                    />
+                </div>
+
+                {/* Daftar Booking Terbaru */}
+                <div className="bg-white rounded-xl shadow overflow-x-auto">
+                    <table className="min-w-full text-sm text-left">
+                        <thead className="bg-gray-100 text-gray-700 uppercase">
+                            <tr>
+                                <th className="px-6 py-3">#</th>
+                                <th className="px-6 py-3">Fasilitas</th>
+                                <th className="px-6 py-3">No. Ruang</th>
+                                <th className="px-6 py-3">Tgl Pinjam</th>
+                                <th className="px-6 py-3">Tgl Kembali</th>
+                                <th className="px-6 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bookings.map((item, index) => (
+                                <tr key={item.id} className="border-b hover:bg-gray-50">
+                                    <td className="px-6 py-3">{index + 1}</td>
+                                    <td className="px-6 py-3">{item.fasilitas?.nama ?? '-'}</td>
+                                    <td className="px-6 py-3">{item.fasilitas?.noRuang ?? '-'}</td>
+                                    <td className="px-6 py-3">{new Date(item.tglPinjam).toLocaleDateString()}</td>
+                                    <td className="px-6 py-3">{new Date(item.tglKembali).toLocaleDateString()}</td>
+                                    <td className="px-6 py-3">
+                                        <StatusBadge status={item.status} />
+                                    </td>
+                                </tr>
+                            ))}
+
+                            {bookings.length === 0 && (
+                                <tr>
+                                    <td colSpan={6} className="text-center py-6 text-gray-500">
+                                        Anda belum memiliki booking.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </AdminLayout>
+    )
 }
 
-export default function Dashboard() {
-    const [bookings, setBookings] = useState<Booking[]>([])
-
-    useEffect(() => {
-        fetch('/bookings')
-            .then((res) => res.json())
-            .then((data) => setBookings(data.data))
-    }, [])
-
+function StatCard({ title, value }: { title: string; value: string | number }) {
     return (
-        <UserLayout>
-            <h1>📋 Daftar Peminjaman</h1>
-            <table border={1} cellPadding={8}>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>ID User</th>
-                        <th>ID Fasilitas</th>
-                        <th>No Ruang</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {bookings.map((b) => (
-                        <tr key={b.id}>
-                            <td>{b.id}</td>
-                            <td>{b.id_user}</td>
-                            <td>{b.id_fasilitas}</td>
-                            <td>{b.no_ruang}</td>
-                            <td>{b.status}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </UserLayout>
+        <div className="bg-white rounded-xl shadow p-6 hover:shadow-md transition">
+            <div className="flex items-center gap-2">
+                <Calendar size={18} className="text-blue-500" />
+                <h2 className="text-sm font-medium text-gray-500">{title}</h2>
+            </div>
+            <p className="mt-2 text-3xl font-bold text-blue-600">{value}</p>
+        </div>
     )
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const color =
+        status === 'Disetujui'
+            ? 'bg-green-100 text-green-700'
+            : status === 'Menunggu'
+                ? 'bg-yellow-100 text-yellow-700'
+                : status === 'Dibatalkan'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-gray-100 text-gray-600'
+
+    return <span className={`px-2 py-1 text-xs rounded-full font-medium ${color}`}>{status}</span>
 }
