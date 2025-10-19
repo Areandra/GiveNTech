@@ -17,7 +17,9 @@ export default defineConfig({
        */
       reload: ['resources/views/**/*.edge'],
     }),
+
     inertia({ ssr: { enabled: false } }),
+
     react(),
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] })
   ],
