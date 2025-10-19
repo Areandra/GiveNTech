@@ -35,6 +35,11 @@ export default class AuthController {
     }
   }
 
+  public async logout({ auth, response }: HttpContext) {
+    auth.use('api').invalidateToken()
+    response.redirect('/login')
+  }
+
   public oauth = ({ ally }: HttpContext) => ally.use('google').redirect()
 
   public async oauthCallback({ ally, auth, inertia }: HttpContext) {
@@ -45,7 +50,7 @@ export default class AuthController {
       expiresIn: '7 days',
     })
 
-    return inertia.render('auth/SaveToken', {
+    return inertia.render('auth/tokens_validate', {
       token: token.toJSON().token,
       user: user.serialize(),
     })

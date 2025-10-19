@@ -11,17 +11,22 @@ export default class AuthMiddleware {
   async handle(
     ctx: HttpContext,
     next: NextFn,
+    args: string | undefined,
+
     options: {
       guards?: (keyof Authenticators)[]
     } = {}
   ) {
-    try {
+    if (args === 'frontend') {
+      try {
+        await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
+        return next()
+      } catch (error) {
+        return ctx.response.redirect().toPath('/login')
+      }
+    } else {
       await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
       return next()
-    } catch (error) {
-      // Kalau gagal autentikasi, redirect pakai inertia
-      return ctx.response.redirect().toPath('/login')
-
     }
   }
 }

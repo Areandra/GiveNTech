@@ -17,8 +17,7 @@ export default function AdminLayout({ children }: LayoutProps) {
     ]
 
     const handleLogout = () => {
-        // bisa sesuaikan dengan rute logout kamu
-        router.post('/logout')
+        router.post('/auth/logout')
     }
 
     return (

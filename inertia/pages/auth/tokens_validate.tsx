@@ -2,13 +2,15 @@ import { useEffect } from 'react'
 import { router, usePage } from '@inertiajs/react'
 
 export default function SaveToken() {
-  const { token, user } = usePage().props
+  const { token, user } = usePage<{ token: string; user: any }>().props
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('access_token', token)
       localStorage.setItem('user', JSON.stringify(user))
-      router.visit('/admin/dashboard')
+      router.visit('/admin/dashboard', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+      })
     }
   }, [token])
 

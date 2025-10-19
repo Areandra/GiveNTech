@@ -55,6 +55,7 @@ router
     router.post('/register', [AuthController, 'register'])
 
     router.post('/login', [AuthController, 'login'])
+    router.post('/logout', [AuthController, 'logout'])
   })
   .prefix('/auth')
 
@@ -77,11 +78,10 @@ router.group(() => {
       router.get('/fasilitas', [AsController, 'fasilitas'])
     })
     .prefix('/admin')
-    .use(middleware.auth())
+    .use(middleware.auth('frontend'))
     .use(middleware.roleBasedAcsess(['admin', 'super_admin']))
 
   router.get('/user/dashboard', [UserController, 'index'])
 })
-.use(middleware.inertia())
 
 router.on('/login').renderInertia('auth/login')

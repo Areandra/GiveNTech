@@ -67,6 +67,7 @@
     "@foadonis/graphql": "^0.0.9",
     "@inertiajs/react": "^2.2.8",
     "@vinejs/vine": "^3.0.1",
+    "axios": "^1.12.2",
     "edge.js": "^6.3.0",
     "graphql": "^16.11.0",
     "graphql-scalars": "^1.25.0",
@@ -76,7 +77,6 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "reflect-metadata": "^0.2.2"
-
   },
   "hotHook": {
     "boundaries": [
