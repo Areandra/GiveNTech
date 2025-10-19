@@ -37,7 +37,7 @@ export default class AuthController {
 
   public oauth = ({ ally }: HttpContext) => ally.use('google').redirect()
 
-  public async oauthCallback({ ally, auth, response }: HttpContext) {
+  public async oauthCallback({ ally, auth, inertia }: HttpContext) {
     const provider = ally.use('google')
     const userData = await provider.user()
     const user = await User.firstOrCreate({ email: userData.email, username: userData.name })
@@ -45,9 +45,9 @@ export default class AuthController {
       expiresIn: '7 days',
     })
 
-    return response.status(200).json({
-      token,
-      user,
+    return inertia.render('auth/SaveToken', {
+      token: token.toJSON().token,
+      user: user.serialize(),
     })
   }
 }

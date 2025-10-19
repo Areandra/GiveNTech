@@ -68,9 +68,20 @@ router
 
 router.on('/').renderInertia('home')
 
-router.get('/admin/dashboard', [AsController, 'dashboard'])
-router.get('/admin/booking', [AsController, 'booking'])
-router.get('/admin/users', [AsController, 'user'])
-router.get('/admin/fasilitas', [AsController, 'fasilitas'])
+router.group(() => {
+  router
+    .group(() => {
+      router.get('/dashboard', [AsController, 'dashboard'])
+      router.get('/booking', [AsController, 'booking'])
+      router.get('/users', [AsController, 'user'])
+      router.get('/fasilitas', [AsController, 'fasilitas'])
+    })
+    .prefix('/admin')
+    .use(middleware.auth())
+    .use(middleware.roleBasedAcsess(['admin', 'super_admin']))
 
-router.get('/user/dashboard', [UserController, 'index'])
+  router.get('/user/dashboard', [UserController, 'index'])
+})
+.use(middleware.inertia())
+
+router.on('/login').renderInertia('auth/login')
