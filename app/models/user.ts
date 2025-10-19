@@ -26,11 +26,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare email: string
 
   @column({ serializeAs: null })
-  declare password: string
+  declare password: string | null
 
   @column()
   @Field()
-  declare role: 'admin' | 'user'
+  declare role: 'super_admin' | 'admin' | 'user'
 
   @column.dateTime({ autoCreate: true })
   @Field()

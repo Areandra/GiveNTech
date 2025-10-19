@@ -1,4 +1,5 @@
 import Booking from '#models/booking'
+import { createBookingsValidator } from '#validators/booking'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class BookingsController {
@@ -7,8 +8,44 @@ export default class BookingsController {
     return Booking.query().paginate(page)
   }
 
-  async store({ request }: HttpContext) {
-    return Booking.create(request.all())
+  async store({ request, auth, response }: HttpContext) {
+    const validData = await request.validateUsing(createBookingsValidator)
+    const users = auth.user
+
+    if (!users?.id) {
+      return response.unauthorized({ message: 'User belum login' })
+    }
+
+    return Booking.create({ ...validData, id_user: users?.id })
+  }
+
+  async update({ request, params, response }: HttpContext) {
+    const bookingId = decodeURI(params.id)
+
+    const booking = await Booking.findOrFail(bookingId)
+
+    booking.merge(request.only(['no_ruang', 'tanggal_kembali', 'status']))
+    await booking.save()
+
+    return response.ok({
+      message: 'booking updated successfully',
+      data: booking,
+    })
+  }
+
+  async destroy({ params, response }: HttpContext) {
+    const bookingId = decodeURI(params.id)
+
+    const booking = await Booking.findOrFail(bookingId)
+
+    const deletedBooking = booking
+
+    booking.delete()
+
+    return response.ok({
+      message: 'booking delete successfully',
+      data: deletedBooking,
+    })
   }
 
   async show({ params }: HttpContext) {
