@@ -1,4 +1,3 @@
-```markdown
 # TaskList — Sistem Peminjaman Fasilitas Kampus 🏫📋
 
 Deskripsi singkat
@@ -63,136 +62,204 @@ Routes dan Dokumentasi API (disesuaikan dengan start/routes.ts)
 Catatan: Semua route API diawali dengan prefix `/api` kecuali route auth (`/auth`) dan oauth (`/oauth`). Beberapa route membutuhkan autentikasi (`auth`) dan/atau role-based access (`admin`, `super_admin`).
 
 Autentikasi & OAuth
+```
 - POST /auth/register
+```
   - Deskripsi: Registrasi user baru.
-  - Body JSON: { "username","email","password" }
+  - Body JSON: ```{ "username","email","password" }```
   - Response: 201 Created { user, access_token }
   - Public
-
+    
+```
 - POST /auth/login
+```
   - Deskripsi: Login user.
-  - Body JSON: { "email", "password" }
+  - Body JSON: ```{ "email", "password" }```
   - Response: 200 { user, access_token }
   - Public
-
+    
+```
 - POST /auth/logout
+```
   - Deskripsi: Logout (require Authorization header).
   - Header: Authorization: Bearer <token>
   - Response: 200 OK
-
+    
+```
 - GET /oauth/google
+```
   - Deskripsi: Redirect ke Google OAuth.
   - Public (frontend mengarahkan user)
-
+    
+```
 - GET /oauth/google/callback
+```
   - Deskripsi: Callback Google OAuth.
 
 Frontend (Inertia) — halaman web (protected/role-based)
+
+ - Protected: middleware.auth('frontend') dan roleBasedAcsess(['admin','super_admin'])
+```
 - GET /admin/dashboard
+```
+```
 - GET /admin/booking
+```
+```
 - GET /admin/users
+```
+```
 - GET /admin/fasilitas
-  - Protected: middleware.auth('frontend') dan roleBasedAcsess(['admin','super_admin'])
-
-- GET /user/index
-- GET /user/booking
-- GET /user/fasilitas
-- GET /user/profile
+```
+    
   - Protected: middleware.auth('frontend') dan roleBasedAcsess(['user'])
+```
+- GET /user/index
+```
+```
+- GET /user/booking
+```
+```
+- GET /user/fasilitas
+```
+```
+- GET /user/profile
+```
+  
 
+```
 - GET /login -> renderInertia('auth/login')
+```
+```
 - GET /register -> renderInertia('auth/register')
+```
 
 REST API (prefix /api)
 - Routes yang hanya untuk admin / super_admin (role-based):
+  ```
   - GET /api/users
+  ```
     - Deskripsi: List pengguna (paginated).
     - Auth: Authorization: Bearer <token> + role admin|super_admin
     - Response: 200 { users: [...] }
-
+    
+  ```
   - POST /api/fasilitas
+  ```
     - Deskripsi: Tambah fasilitas.
     - Auth: admin|super_admin
-    - Body: { "nama": "Ruang Rapat A" }
+    - Body: ```{ "nama": "Ruang Rapat A" }```
     - Validasi: nama.required, maxLength 100
     - Response: 201 { data }
-
+      
+  ```
   - PUT /api/fasilitas/:id
+  ```
     - Deskripsi: Update fasilitas.
     - Auth: admin|super_admin
-    - Body: { "nama": "Nama Baru", "status": "Perawatan" }
+    - Body: ```{ "nama": "Nama Baru", "status": "Perawatan" }```
     - Response: 200 { data }
-
+      
+  ```
   - DELETE /api/fasilitas/:id
+  ```
     - Deskripsi: Hapus fasilitas.
     - Auth: admin|super_admin
     - Response: 200 / 204
-
+      
+  ```
   - PUT /api/bookings/:id
+  ```
     - Deskripsi: Update booking (biasanya untuk ubah status).
     - Auth: admin|super_admin
-    - Body: { "status": "Disetujui" }
+    - Body: ```{ "status": "Disetujui" }```
     - Response: 200 { data }
-
+      
+  ```
   - DELETE /api/bookings/:id
+  ```
     - Deskripsi: Hapus booking.
     - Auth: admin|super_admin
     - Response: 200 / 204
 
 - Routes untuk user terautentikasi:
+  ```
   - POST /api/bookings
+  ```
     - Deskripsi: Buat booking (user).
     - Auth: bearer token
     - Body minimal (frontend memanggil):
-      { "id_fasilitas": 1, "no_ruang": "A101" }
+      ```{ "id_fasilitas": 1, "no_ruang": "A101" }```
       Rekomendasi: tambahkan tgl_pinjam/tgl_kembali sesuai model backend:
-      { "id_fasilitas":1, "no_ruang":"A101", "tglPinjam":"2025-10-21", "tglKembali":"2025-10-22" }
+      ```{ "id_fasilitas":1, "no_ruang":"A101", "tglPinjam":"2025-10-21", "tglKembali":"2025-10-22" }```
     - Response: 201 { message, data }
-
+      
+  ```
   - GET /api/fasilitas
+  ```
     - Deskripsi: Daftar fasilitas (public atau auth required depending implementation).
     - Query optional: ?page=1, ?status=Tersedia
     - Response: 200 { data: [ {id,nama,status,created_at,...} ] }
-
+      
+  ```
   - GET /api/fasilitas/:id
+  ```
     - Deskripsi: Detail fasilitas.
     - Response: 200 { data }
-
+      
+  ```
   - GET /api/bookings
+  ```
     - Deskripsi: List booking (bisa filter user/status).
     - Response: 200 { data }
-
+      
+  ```
   - GET /api/bookings/:id
+  ```
     - Deskripsi: Detail booking.
     - Response: 200 { data }
 
   - User profile routes (authenticated, some actions role-restricted):
+    ```
     - GET /api/users/:username
+    ```
       - Deskripsi: Ambil info user
       - Auth: bearer
+        
+    ```
     - PUT /api/users/:username
+    ```
       - Deskripsi: Update user (profil)
       - Auth: bearer
+        
+    ```
     - GET /api/users/:username/provide
+    ```
       - Deskripsi: Berikan role/permission (super_admin only)
       - Auth: super_admin
+        
+    ```
     - GET /api/users/:username/revoke
+    ```
       - Deskripsi: Cabut role (super_admin only)
       - Auth: super_admin
 
 Contoh request singkat (cURL)
 - Login:
+  ```bash
   curl -X POST https://your-host/auth/login -H "Content-Type: application/json" -d '{"email":"a@b.com","password":"pass"}'
-
+  ```
 - Get fasilitas (public):
+  ```bash
   curl https://your-host/api/fasilitas
-
+  ```
 - Buat booking (authenticated):
+  ```bash
   curl -X POST https://your-host/api/bookings \
     -H "Authorization: Bearer <token>" \
     -H "Content-Type: application/json" \
     -d '{"id_fasilitas":2,"no_ruang":"B201","tglPinjam":"2025-10-21","tglKembali":"2025-10-22"}'
-
+  ```
 GraphQL (update dokumentasi — berdasarkan schema & resolver di repo)
 ------------------------------------------------------------------
 Catatan penting: repo ini sudah mendaftarkan provider GraphQL (@foadonis/graphql) dan mengimpor resolver berikut di `start/graphql.ts`:
@@ -339,6 +406,7 @@ Validasi & aturan bisnis (dari kode)
 
 Struktur folder utama
 ---------------------
+```
 - app/ ................... (controllers, models, validators)
   - controllers/
   - models/
@@ -354,6 +422,7 @@ Struktur folder utama
 - config/
 - package.json
 - adonisrc.ts
+```
 
 Tips deploy
 -----------
@@ -374,4 +443,3 @@ Kontributor & Lisensi
   1. Fork → buat branch feature/...
   2. Jalankan migrasi/seeder & test
   3. Buka PR dengan deskripsi dan langkah reproduksi
-```
