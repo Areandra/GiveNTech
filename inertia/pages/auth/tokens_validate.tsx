@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { router, usePage } from '@inertiajs/react'
+import { Head, router, usePage } from '@inertiajs/react'
 
 export default function SaveToken() {
   const { token, user } = usePage<{ token: string; user: any }>().props
@@ -20,5 +20,11 @@ export default function SaveToken() {
     }
   }, [token])
 
-  return <div>Signing in...</div>
+  return (
+    <div>
+      {' '}
+      <Head title="Validate" />
+      Signing in...
+    </div>
+  )
 }

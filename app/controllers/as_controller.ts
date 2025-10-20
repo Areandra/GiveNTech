@@ -18,16 +18,20 @@ export default class AsController {
             bookings: (
                 await Booking.query()
                     .preload('user', (userQuery) => {
-                        userQuery.select(['id', 'username']) // ambil hanya kolom yang dibutuhkan
+                        userQuery.select(['id', 'username']) 
+                    })
+                    .preload('fasilitas', (fasiliatasQuery) => {
+                        fasiliatasQuery.select('*')
                     })
                     .paginate(page)
             ).toJSON().data,
         })
     }
-    async user({ request, inertia }: HttpContext) {
+    async user({ request, inertia, auth }: HttpContext) {
         const page = request.input('page', 1)
         return inertia.render('admin/user', {
             users: (await User.query().paginate(page)).toJSON().data,
+            role: (auth.user?.role)
         })
     }
     async fasilitas({ request, inertia }: HttpContext) {
@@ -36,7 +40,4 @@ export default class AsController {
             fasilitas: (await Fasilitas.query().paginate(page)).toJSON().data,
         })
     }
-    // async store({ request, inertia }: HttpContext) {
-    //     return Booking.create(request.all())
-    // }
 }

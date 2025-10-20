@@ -37,4 +37,12 @@ export default class UsController {
       fasilitas: (await Fasilitas.query().paginate(page)).toJSON().data,
     })
   }
+
+  async profile({ auth, inertia }: HttpContext) {
+    const user = auth.user!
+
+    return inertia.render('user/profile', {
+      user,
+    })
+  }
 }

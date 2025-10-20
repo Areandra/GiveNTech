@@ -2,14 +2,9 @@ import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
 export const createUserValidator = vine.compile(
   vine.object({
-    username: vine
-      .string()
-      .trim()
-      .minLength(1)
-      .maxLength(255)
-      .unique({ table: 'users', column: 'email' }),
-    email: vine.string().trim().email().maxLength(255),
-    password: vine.string().minLength(8)
+    username: vine.string().trim().minLength(1).maxLength(255),
+    email: vine.string().trim().email().maxLength(255).unique({ table: 'users', column: 'email' }),
+    password: vine.string().minLength(8),
   })
 )
 createUserValidator.messagesProvider = new SimpleMessagesProvider({

@@ -7,6 +7,7 @@ import router from '@adonisjs/core/services/router'
 import AuthController from '#controllers/auth_controller'
 import { middleware } from './kernel.js'
 
+router.on('/').redirectToPath('/login')
 router
   .group(() => {
     router
@@ -32,12 +33,17 @@ router
 
         router
           .group(() => {
-            router.get('/users/:username/provide', [UserController, 'provide'])
+            router
+              .group(() => {
+                router.get('/:username/provide', [UserController, 'provide'])
+                router.get('/:username/revoke', [UserController, 'revoke'])
+              })
+              .use(middleware.roleBasedAcsess(['super_admin']))
+            router.get('/:username', [UserController, 'show'])
+            router.put('/:username', [UserController, 'update'])
           })
-          .use(middleware.roleBasedAcsess(['super_admin']))
+          .prefix('/users')
         router.post('/bookings', [BookingsController, 'store'])
-        router.get('/users/:username', [UserController, 'show'])
-        router.put('/users/:username', [UserController, 'update'])
       })
       .use(middleware.auth())
 
@@ -68,8 +74,6 @@ router
   })
   .prefix('/oauth')
 
-router.on('/').renderInertia('home')
-
 router.group(() => {
   router
     .group(() => {
@@ -82,15 +86,17 @@ router.group(() => {
     .use(middleware.auth('frontend'))
     .use(middleware.roleBasedAcsess(['admin', 'super_admin']))
 
-    router
+  router
     .group(() => {
       router.get('/index', [UsController, 'dashboard'])
       router.get('/booking', [UsController, 'booking'])
       router.get('/fasilitas', [UsController, 'fasilitas'])
+      router.get('/profile', [UsController, 'profile'])
     })
     .prefix('/user')
     .use(middleware.auth('frontend'))
-    .use(middleware.roleBasedAcsess(['user'])) 
+    .use(middleware.roleBasedAcsess(['user']))
 })
 
 router.on('/login').renderInertia('auth/login')
+router.on('/register').renderInertia('auth/register')

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import UserLayout from '../../app/Layouts/userlayout'
-import { router } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
 
 export default function Fasilitas({ fasilitas }: { fasilitas: any[] }) {
     const [modalOpen, setModalOpen] = useState(false)
@@ -10,7 +10,6 @@ export default function Fasilitas({ fasilitas }: { fasilitas: any[] }) {
 
     const handlePinjamClick = (item: any) => {
         if (item.status !== 'Tersedia') {
-            alert('Fasilitas sedang tidak tersedia')
             return
         }
         setSelectedFasilitas(item)
@@ -20,7 +19,6 @@ export default function Fasilitas({ fasilitas }: { fasilitas: any[] }) {
 
     const handleSubmit = async () => {
         if (!noRuang.trim()) {
-            alert('Nomor ruang wajib diisi')
             return
         }
 
@@ -37,13 +35,9 @@ export default function Fasilitas({ fasilitas }: { fasilitas: any[] }) {
 
                 setModalOpen(false)
                 router.reload()
-            } else {
-                const data = await res.json()
-                alert('Gagal meminjam: ' + data.message)
             }
         } catch (err) {
             console.error(err)
-            alert('Terjadi kesalahan')
         } finally {
             setLoading(false)
         }
@@ -51,6 +45,8 @@ export default function Fasilitas({ fasilitas }: { fasilitas: any[] }) {
 
     return (
         <UserLayout>
+                  <Head title="Fasilitas" />
+
             <div>
                 <h1 className="text-2xl font-bold mb-4">Daftar Fasilitas</h1>
                 <div className="overflow-x-auto bg-white rounded-xl shadow">

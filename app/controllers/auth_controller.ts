@@ -3,20 +3,28 @@ import { createUserValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
-  public async register({ auth, request, response }: HttpContext) {
+  public async register({ auth, request, inertia }: HttpContext) {
     const validateData = await request.validateUsing(createUserValidator)
     const user = await User.create(validateData)
     const token = await auth.use('api').createToken(user, [], {
       expiresIn: '7 days',
     })
 
-    return response.status(201).json({
-      token,
-      user,
+    await user.refresh()
+    await user.save()
+
+    return inertia.render('auth/tokens_validate', {
+      token: token.toJSON().token,
+      user: user.serialize(),
     })
+
+    // return response.status(201).json({
+    //   token,
+    //   user,
+    // })
   }
 
-  public async login({ auth, request, response }: HttpContext) {
+  public async login({ auth, request, inertia }: HttpContext) {
     const { email, password } = request.all()
 
     try {
@@ -26,12 +34,17 @@ export default class AuthController {
         expiresIn: '7 days',
       })
 
-      return response.status(200).json({
-        token,
-        user,
+      return inertia.render('auth/tokens_validate', {
+        token: token.toJSON().token,
+        user: user.serialize(),
       })
+
+      // return response.status(200).json({
+      //   token,
+      //   user,
+      // })
     } catch (e) {
-      return response.status(401).json({ message: 'Invalid credentials' })
+      // return response.status(401).json({ message: 'Invalid credentials' })
     }
   }
 
@@ -49,6 +62,9 @@ export default class AuthController {
     const token = await auth.use('api').createToken(user, [], {
       expiresIn: '7 days',
     })
+
+    await user.refresh()
+    await user.save()
 
     return inertia.render('auth/tokens_validate', {
       token: token.toJSON().token,

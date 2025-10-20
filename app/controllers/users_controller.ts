@@ -48,4 +48,22 @@ export default class UsersController {
       messege: 'Role User Berhasil Di Provide',
     })
   }
+  
+  async revoke({ params, response }: HttpContext) {
+    const user = await User.findByOrFail('username', decodeURI(params.username))
+
+    if (user.role === 'user')
+      return response.status(409).json({
+        message: 'Role adalah user',
+      })
+
+    user.role = 'user'
+    user.save()
+
+    return response.status(201).json({
+      user: user.username,
+      newRole: user.role,
+      messege: 'Role User Berhasil Di Provide',
+    })
+  }
 }
