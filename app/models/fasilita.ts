@@ -16,7 +16,7 @@ export default class Fasilitas extends BaseModel {
   
   @column()
   @Field()
-  declare status: 'Tersedia' | 'Digunakan' | 'Perawatan'
+  declare status: 'Tersedia' | 'Digunakan' | 'Perawatan' | 'Di Reservasi'
   
   @column.dateTime({ autoCreate: true })
   @Field()

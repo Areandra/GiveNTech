@@ -1,4 +1,5 @@
 import Booking from '#models/booking'
+import Fasilitas from '#models/fasilita'
 import { createBookingsValidator } from '#validators/booking'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -15,6 +16,15 @@ export default class BookingsController {
     if (!users?.id) {
       return response.unauthorized({ message: 'User belum login' })
     }
+
+    Fasilitas.findOrFail(validData.id_fasilitas).then(async (fasilitas) => {
+      if (fasilitas.status !== 'Tersedia') {
+        return response.badRequest({ message: 'Fasilitas tidak tersedia untuk dipinjam' })
+      } else {
+        fasilitas.status = 'Di Reservasi'
+        await fasilitas.save()
+      }
+    })
 
     return Booking.create({ ...validData, id_user: users?.id })
   }

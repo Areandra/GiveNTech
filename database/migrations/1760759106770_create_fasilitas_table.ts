@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('nama', 100).notNullable()
-      table.enum('status', ['Tersedia', 'Digunakan', 'Perawatan']).defaultTo('Tersedia')
+      table.enum('status', ['Tersedia', 'Digunakan', 'Perawatan','Di Reservasi']).defaultTo('Tersedia')
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

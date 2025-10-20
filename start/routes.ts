@@ -1,4 +1,5 @@
 import AsController from '#controllers/as_controller'
+import UsController from '#controllers/us_controller'
 import BookingsController from '#controllers/bookings_controller'
 import FasilitasController from '#controllers/fasilitas_controller'
 import UserController from '#controllers/users_controller'
@@ -81,7 +82,15 @@ router.group(() => {
     .use(middleware.auth('frontend'))
     .use(middleware.roleBasedAcsess(['admin', 'super_admin']))
 
-  router.get('/user/dashboard', [UserController, 'index'])
+    router
+    .group(() => {
+      router.get('/index', [UsController, 'dashboard'])
+      router.get('/booking', [UsController, 'booking'])
+      router.get('/fasilitas', [UsController, 'fasilitas'])
+    })
+    .prefix('/user')
+    .use(middleware.auth('frontend'))
+    .use(middleware.roleBasedAcsess(['user'])) 
 })
 
 router.on('/login').renderInertia('auth/login')

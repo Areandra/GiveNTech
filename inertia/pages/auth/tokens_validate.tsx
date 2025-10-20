@@ -8,9 +8,15 @@ export default function SaveToken() {
     if (token) {
       localStorage.setItem('access_token', token)
       localStorage.setItem('user', JSON.stringify(user))
-      router.visit('/admin/dashboard', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
-      })
+      if (user.role !== 'user') {
+        router.visit('/admin/dashboard', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+        })
+      } else {
+        router.visit('/user/index', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+        })
+      }
     }
   }, [token])
 

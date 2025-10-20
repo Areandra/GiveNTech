@@ -18,13 +18,18 @@ export default function Login() {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search)
     console.log('ulang', localStorage.getItem('access_token'))
-    if (query.get('redirect') === 'login') {
+    if (query.get('redirect') === 'admin') {
       router.visit('/admin/dashboard', {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
       })
-      const newUrl = window.location.pathname
-      window.history.replaceState({}, '', newUrl)
+    } else if (query.get('redirect') === 'user') {
+      console.log(query.get('redirect'))
+      router.visit('/user/index', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+      })
     }
+    const newUrl = window.location.pathname
+    window.history.replaceState({}, '', newUrl)
   }, [])
   
   const handleGoogleLogin = () => {
