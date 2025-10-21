@@ -2,7 +2,7 @@
 
 Deskripsi singkat
 -----------------
-TaskList adalah aplikasi full‑stack untuk manajemen peminjaman fasilitas kampus (ruang rapat, laboratorium, dsb.). Backend dibangun dengan AdonisJS + Lucid ORM, frontend menggunakan Inertia.js + React (TypeScript). Menyediakan panel Admin (manajemen pengguna, fasilitas, booking) dan panel User (daftar fasilitas, buat booking, profil).
+GiveNTech adalah aplikasi full‑stack untuk manajemen peminjaman fasilitas kampus (ruang rapat, laboratorium, dsb.). Backend dibangun dengan AdonisJS + Lucid ORM, frontend menggunakan Inertia.js + React (TypeScript). Menyediakan panel Admin (manajemen pengguna, fasilitas, booking) dan panel User (daftar fasilitas, buat booking, profil).
 
 Fitur utama
 -----------
