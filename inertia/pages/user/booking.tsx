@@ -11,8 +11,9 @@ export default function Booking({
       id: number
       status: string
       tglPinjam: string
+      noRuang: string
       tglKembali: string
-      fasilitas?: { id: number; nama: string; noRuang: string }
+      fasilitas?: { id: number; nama: string; }
     }[]
   }
 }) {
@@ -45,7 +46,7 @@ export default function Booking({
                 <tr key={item.id} className="border-b hover:bg-gray-50">
                   <td className="px-6 py-3">{index + 1}</td>
                   <td className="px-6 py-3">{item.fasilitas?.nama ?? '-'}</td>
-                  <td className="px-6 py-3">{item.fasilitas?.noRuang ?? '-'}</td>
+                  <td className="px-6 py-3">{item.noRuang ?? '-'}</td>
                   <td className="px-6 py-3">{new Date(item.tglPinjam).toLocaleDateString()}</td>
                   <td className="px-6 py-3">{new Date(item.tglKembali).toLocaleDateString()}</td>
                   <td className="px-6 py-3">

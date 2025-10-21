@@ -31,45 +31,8 @@ export default function Dashboard({
           <StatCard title="Total Booking" value={user.bookings.length} />
           <StatCard
             title="Booking Aktif"
-            value={user.bookings.filter((b) => b.status === 'Disetujui').length}
+            value={user.bookings.filter((b) => b.status === 'Digunakan').length}
           />
-        </div>
-        \{' '}
-        <div className="bg-white rounded-xl shadow overflow-x-auto">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-100 text-gray-700 uppercase">
-              <tr>
-                <th className="px-6 py-3">#</th>
-                <th className="px-6 py-3">Fasilitas</th>
-                <th className="px-6 py-3">No. Ruang</th>
-                <th className="px-6 py-3">Tgl Pinjam</th>
-                <th className="px-6 py-3">Tgl Kembali</th>
-                <th className="px-6 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {user.bookings.map((item, index) => (
-                <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-3">{index + 1}</td>
-                  <td className="px-6 py-3">{item.fasilitas?.nama ?? '-'}</td>
-                  <td className="px-6 py-3">{item.fasilitas?.noRuang ?? '-'}</td>
-                  <td className="px-6 py-3">{new Date(item.tglPinjam).toLocaleDateString()}</td>
-                  <td className="px-6 py-3">{new Date(item.tglKembali).toLocaleDateString()}</td>
-                  <td className="px-6 py-3">
-                    <StatusBadge status={item.status} />
-                  </td>
-                </tr>
-              ))}
-
-              {user.bookings.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-center py-6 text-gray-500">
-                    Anda belum memiliki booking.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
       </div>
     </UserLayout>
@@ -86,17 +49,4 @@ function StatCard({ title, value }: { title: string; value: string | number }) {
       <p className="mt-2 text-3xl font-bold text-blue-600">{value}</p>
     </div>
   )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const color =
-    status === 'Disetujui'
-      ? 'bg-green-100 text-green-700'
-      : status === 'Menunggu'
-        ? 'bg-yellow-100 text-yellow-700'
-        : status === 'Dibatalkan'
-          ? 'bg-red-100 text-red-700'
-          : 'bg-gray-100 text-gray-600'
-
-  return <span className={`px-2 py-1 text-xs rounded-full font-medium ${color}`}>{status}</span>
 }

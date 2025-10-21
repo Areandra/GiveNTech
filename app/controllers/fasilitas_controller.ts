@@ -14,7 +14,7 @@ export default class FasilitasController {
   }
 
   async delete({ params, response }: HttpContext) {
-    const fasilitasId = decodeURI(params.id)
+    const fasilitasId = params.id
 
     const fasilitas = await Fasilitas.findOrFail(fasilitasId)
 
@@ -29,7 +29,7 @@ export default class FasilitasController {
   }
 
   async update({ request, params, response }: HttpContext) {
-      const fasilitasId = decodeURI(params.id)
+      const fasilitasId = params.id
   
       const fasilitas = await Fasilitas.findOrFail(fasilitasId)
   

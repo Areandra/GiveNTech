@@ -30,7 +30,7 @@ export default class BookingsController {
   }
 
   async update({ request, params, response }: HttpContext) {
-    const bookingId = decodeURI(params.id)
+    const bookingId = params.id
 
     const booking = await Booking.findOrFail(bookingId)
 
