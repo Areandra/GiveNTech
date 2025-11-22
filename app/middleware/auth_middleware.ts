@@ -17,9 +17,15 @@ export default class AuthMiddleware {
     next: NextFn,
     options: {
       guards?: (keyof Authenticators)[]
+      dinamis?: boolean
     } = {}
   ) {
-    await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
-    return next()
+    try {
+      await ctx.auth.authenticateUsing(options.guards)
+      return next()
+    } catch {
+      if (options.dinamis) return next()
+      ctx.response.redirect(this.redirectTo)
+    }
   }
 }

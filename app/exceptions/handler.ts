@@ -58,8 +58,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
      */
     return ctx.response.status(error.status || 500).send({
       success: false,
-      message: error.message || 'Server Error',
-      status: error.status || 500,
+      ...error
     })
   }
 

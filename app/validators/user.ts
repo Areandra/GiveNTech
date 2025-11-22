@@ -1,11 +1,12 @@
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
+import { isAdminRule } from './rules/is_admin.js'
 
 export default class UsersValidator {
   private baseSchema = {
     username: vine.string().maxLength(50),
     email: vine.string().email(),
     password: vine.string().minLength(6),
-    role: vine.enum(['super_admin', 'admin', 'user']).optional(),
+    role: vine.enum(['super_admin', 'admin', 'user']).use(isAdminRule()).optional(),
   }
 
   public create = vine.compile(

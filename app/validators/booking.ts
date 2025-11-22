@@ -1,4 +1,5 @@
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
+import { isAdminExceptRule } from './rules/is_admin.js'
 
 export default class BookingsValidator {
   private baseSchema = {
@@ -37,6 +38,7 @@ export default class BookingsValidator {
 
     status: vine
       .enum(['Pending', 'Confirmed', 'Picked Up', 'Returned', 'Cancelled', 'Penalized', 'Done'])
+      .use(isAdminExceptRule(['Pending', 'Cancelled']))
       .optional(),
   }
 
@@ -47,7 +49,7 @@ export default class BookingsValidator {
       idApprover: this.baseSchema.idApprover.optional(),
       roomNumber: this.baseSchema.roomNumber.optional(),
       returnDate: this.baseSchema.returnDate.optional(),
-      status: this.baseSchema.status.optional()
+      status: this.baseSchema.status.optional(),
     })
   )
 }

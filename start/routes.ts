@@ -7,7 +7,6 @@
 |
 */
 
-import AuthController from '#controllers/auth_controller'
 import BookingsController from '#controllers/bookings_controller'
 import FasilitiesController from '#controllers/fasilities_controller'
 import UsersController from '#controllers/users_controller'
@@ -19,21 +18,29 @@ router
   .group(() => {
     router
       .group(() => {
-        router.resource('/facility', FasilitiesController).apiOnly()
-        router.resource('/booking', BookingsController).apiOnly()
-        router.resource('/user', UsersController).apiOnly()
+        router
+          .resource('/facility', FasilitiesController)
+          .apiOnly()
+          .use('*', middleware.roleBasedAcsess(['admin', 'super_admin']))
+          .except(['index', 'show'])
+        router
+          .resource('/booking', BookingsController)
+          .apiOnly()
+          .use('*', middleware.roleBasedAcsess(['admin', 'super_admin']))
+          .except(['index', 'show'])
+        router
+          .resource('/user', UsersController)
+          .apiOnly().except(['store'])
+          .use('index', middleware.roleBasedAcsess(['admin', 'super_admin']))
       })
-      .prefix('/v1')
+      .use(middleware.auth())
+
+    router.post('/user', [UsersController, 'store']).use(middleware.auth({ dinamis: true }))
   })
-  .prefix('/api')
-  .use(middleware.auth())
-  .use(middleware.roleBasedAcsess(['user', 'admin', 'super_admin']))
+  .prefix('/api/v1')
 
 router
   .group(() => {
-    router.post('/register', [AuthController, 'register'])
-    router.post('/login', [AuthController, 'login'])
-    router.post('/update', [AuthController, 'updateProfile'])
-    router.delete('/:id', [AuthController, 'destroyAccount'])
+    router.post('/login', [UsersController, 'login'])
   })
   .prefix('/auth')
