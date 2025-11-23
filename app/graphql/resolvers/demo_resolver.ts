@@ -4,6 +4,6 @@ import { Query, Resolver } from '@foadonis/graphql'
 export default class DemoResolver {
   @Query(() => String)
   demo() {
-    return "Hello World"
+    return 'Hello World'
   }
 }

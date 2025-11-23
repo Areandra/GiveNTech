@@ -25,17 +25,13 @@ async function isAdmin(value: unknown, _: unknown, field: FieldContext) {
   }
 }
 
-async function isAdminExcept(
-  value: unknown,
-  options: string[] ,
-  field: FieldContext
-) {
+async function isAdminExcept(value: unknown, options: string[], field: FieldContext) {
   if (typeof value !== 'string') return
   const userRole = field.meta?.userRole
 
-  const isAdmin = checkIsAdmin(userRole)
+  const isAdminUser = checkIsAdmin(userRole)
 
-  if (!isAdmin && !options.includes(value)) {
+  if (!isAdminUser && !options.includes(value)) {
     field.report(
       `You are not authorized to set this field with value "${value}". Allowed: ${options.join(', ')}`,
       'isAdminExceptValue',

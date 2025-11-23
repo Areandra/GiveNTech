@@ -40,7 +40,7 @@ export default class FasilitiesController {
 
   async update(ctx: HttpContext) {
     const id = ctx.params.id
-    const body = await ctx.request.validateUsing(this.validator.create)
+    const body = await ctx.request.validateUsing(this.validator.update)
     await this.service.updateFacility(id, body)
 
     ctx.response.ok({

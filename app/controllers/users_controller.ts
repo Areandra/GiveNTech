@@ -105,12 +105,12 @@ export default class UsersController {
   }
 
   async login(ctx: HttpContext) {
-    const body = await ctx.request.validateUsing(this.validator.create)
+    const body = await ctx.request.validateUsing(this.validator.login)
     const data = await this.service.getUserByCredential(body, ctx)
 
     ctx.response.ok({
       succses: true,
-      message: 'Registerd succsesfuly',
+      message: 'Login succsesfuly',
       token: data.token,
       data: data.user,
     })

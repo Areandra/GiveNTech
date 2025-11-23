@@ -29,7 +29,7 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
       table.string('room_number', 50).nullable()
       table.date('booking_date').notNullable()
-      table.date('return_date').notNullable()
+      table.date('return_date').nullable()
       table
         .enum('status', [
           'Pending',

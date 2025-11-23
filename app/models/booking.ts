@@ -35,7 +35,7 @@ export default class Booking extends BaseModel {
 
   @column()
   @Field(() => DateTime)
-  declare returnDate?: DateTime | string
+  declare returnDate?: DateTime | string | null
 
   @column()
   @Field()
