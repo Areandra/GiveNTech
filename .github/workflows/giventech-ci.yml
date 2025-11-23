@@ -1,0 +1,42 @@
+name: AdonisJS CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: giventech
+          MYSQL_USER: github
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -p password"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm install
+
+      # copy env testing atau set env langsung
+      - run: cp .env.testing .env
+
+      # jalankan migration / seed
+      - run: node ace migration:run
+      - run: node ace db:seed
+
+      # jalankan unit test
+      - run: node ace test --force-exit
