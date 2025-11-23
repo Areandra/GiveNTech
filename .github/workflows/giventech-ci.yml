@@ -15,11 +15,8 @@ jobs:
           MYSQL_USER: github
           MYSQL_PASSWORD: password
         # ports: - 3306:3306 <-- Dihapus
-        options: >
-          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD}"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10 # Ditingkatkan
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD}" --health-interval 10s --health-timeout 5s --health-retries 10
 
     steps:
       - uses: actions/checkout@v4
