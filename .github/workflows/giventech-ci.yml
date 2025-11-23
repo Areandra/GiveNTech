@@ -14,13 +14,12 @@ jobs:
           MYSQL_DATABASE: giventech
           MYSQL_USER: github
           MYSQL_PASSWORD: password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -h localhost -p password"
+        # ports: - 3306:3306 <-- Dihapus
+        options: >
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD}"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10 # Ditingkatkan
 
     steps:
       - uses: actions/checkout@v4
@@ -31,8 +30,23 @@ jobs:
 
       - run: npm install
 
-      # copy env testing atau set env langsung
+      # Pastikan konfigurasi .env.testing Anda menggunakan host 'mysql'
       - run: cp .env.testing .env
+
+      # 👇 PENTING: Tambahkan langkah memastikan koneksi ke MySQL sudah SIAP
+      - name: Wait for MySQL
+        run: |
+          echo "Waiting for MySQL service to be fully ready..."
+          # Perintah ini menggunakan host 'mysql' (nama service)
+          for i in {1..10}; do
+            if mysql -h mysql -u github -ppassword -e "SELECT 1" >/dev/null 2>&1; then
+              echo "MySQL is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "MySQL failed to start after waiting."
+          exit 1
 
       # jalankan migration / seed
       - run: node ace migration:run
