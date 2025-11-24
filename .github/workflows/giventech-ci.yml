@@ -1,4 +1,4 @@
-name: AdonisJS CI
+name: CI
 
 on: [push, pull_request]
 
@@ -47,4 +47,4 @@ jobs:
 
       - run: node ace migration:run --force
 
-      - run: node ace test --force-exit
+      - run: node ace test --silent
