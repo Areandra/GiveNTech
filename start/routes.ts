@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import UsersController from '#controllers/users_controller'
 router.on('/').renderInertia('home')
 
 router
@@ -26,7 +27,7 @@ router
           .use('*', middleware.roleBasedAcsess(['admin', 'super_admin']))
           .except(['index', 'show'])
         router
-          .resource('/user', () => import('#controllers/users_controller'))
+          .resource('/user', UsersController)
           .apiOnly()
           .except(['store'])
           .use('index', middleware.roleBasedAcsess(['admin', 'super_admin']))
