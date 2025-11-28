@@ -1,40 +1,33 @@
 import Booking from '#models/booking'
 import Facility from '#models/facility'
+class BookingService {
 
-export default class BookingService {
-  /**
-   * List paginated bookings
-   */
   public async listBookings(page = 1) {
     return Booking.query().preload('user').preload('fasilitas').paginate(page)
   }
 
-  /**
-   * Create a new booking
-   */
-  public async createBooking(userId: number, bookingData: Partial<Booking>) {
+  public async meListBookings(userId: number ,page = 1) {
+    return Booking.query().where('id', userId).preload('fasilitas').paginate(page)
+  }
+
+  public async createBooking(userId: number, bookingData: any ) {
     const facility = await Facility.find(bookingData.idFacility)
     if (!facility) throw new Error('Facility not found')
     if (facility.status !== 'Available') throw new Error('Facility not available')
 
-    // Set booking status & facility status
     const booking = await Booking.create({
       ...bookingData,
       idUser: userId,
       status: bookingData.status || 'Pending',
     })
 
-    // Update facility status: Pending → Borrowed/Booked
     facility.status = 'Borrowed'
     await facility.save()
 
     return booking
   }
 
-  /**
-   * Update booking with automatic facility status
-   */
-  public async updateBooking(bookingId: number, updateData: Partial<Booking>) {
+  public async updateBooking(bookingId: number, updateData: any) {
     const booking = await Booking.find(bookingId)
     if (!booking) throw new Error('Booking not found')
 
@@ -47,7 +40,6 @@ export default class BookingService {
     booking.merge(updateData)
     await booking.save()
 
-    // Update facility based on new booking status
     switch (newStatus) {
       case 'Pending':
       case 'Confirmed':
@@ -74,9 +66,6 @@ export default class BookingService {
     return booking
   }
 
-  /**
-   * Delete booking and reset facility if necessary
-   */
   public async deleteBooking(bookingId: number) {
     const booking = await Booking.find(bookingId)
     if (!booking) throw new Error('Booking not found')
@@ -91,9 +80,6 @@ export default class BookingService {
     return booking
   }
 
-  /**
-   * Get single booking with relations
-   */
   public async getBooking(bookingId: number) {
     const booking = await Booking.query()
       .where('id', bookingId)
@@ -106,3 +92,5 @@ export default class BookingService {
     return booking
   }
 }
+
+export default new BookingService()

@@ -9,38 +9,47 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const AuthController = () => import('#controllers/auth_controller')
+const FasilitiesController = () => import('#controllers/fasilities_controller')
+const UsersController = () => import('#controllers/users_controller')
+const BookingsController = () => import('#controllers/bookings_controller')
 router.on('/').renderInertia('home')
+
+router
+  .group(() => {
+    router.post('/login', [AuthController, 'login'])
+  })
+  .prefix('/auth')
 
 router
   .group(() => {
     router
       .group(() => {
         router
-          .resource('/facility', () => import('#controllers/fasilities_controller'))
+          .resource('/facility', FasilitiesController)
           .apiOnly()
-          .use('*', middleware.roleBasedAcsess(['admin', 'super_admin']))
           .except(['index', 'show'])
+          .use('*', middleware.roleBasedAcsess(['admin']))
+        router.resource('/facility', FasilitiesController).apiOnly().only(['index', 'show'])
         router
-          .resource('/booking', () => import('#controllers/bookings_controller'))
+          .resource('/booking', BookingsController)
           .apiOnly()
-          .use('*', middleware.roleBasedAcsess(['admin', 'super_admin']))
-          .except(['index', 'show'])
+          .use('*', middleware.roleBasedAcsess(['admin']))
         router
-          .resource('/user', () => import('#controllers/users_controller'))
+          .resource('/user', UsersController)
           .apiOnly()
           .except(['store'])
-          .use('index', middleware.roleBasedAcsess(['admin', 'super_admin']))
+          .use('index', middleware.roleBasedAcsess(['admin']))
       })
       .use(middleware.auth())
-
     router
-      .post('/user', '#controllers/users_controller.store')
-      .use(middleware.auth({ dinamis: true }))
+      .resource('/user', UsersController)
+      .apiOnly()
+      .only(['store'])
+      .use('store', middleware.auth({ dinamis: true }))
   })
   .prefix('/api/v1')
 
-router
-  .group(() => {
-    router.post('/login', '#controllers/users_controller.login')
-  })
-  .prefix('/auth')
+router.get('/docs', '#controllers/open_apis_controller.html')
+router.get('/docs.json', '#controllers/open_apis_controller.json')
+router.get('/docs.yml', '#controllers/open_apis_controller.yaml')

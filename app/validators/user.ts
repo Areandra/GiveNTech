@@ -1,52 +1,24 @@
+import { createUserSchema, loginUserSchema, updateUserSchema } from '#schemas/user_schema'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
-import { isAdminRule } from './rules/is_admin.js'
 
-export default class UsersValidator {
-  private baseSchema = {
-    username: vine.string().maxLength(50),
-    email: vine.string().email(),
-    password: vine.string().minLength(6),
-    role: vine.enum(['super_admin', 'admin', 'user']).use(isAdminRule()).optional(),
-  }
-
-  public create = vine.compile(
-    vine.object({
-      ...this.baseSchema,
-    })
-  )
-
-  public update = vine.compile(
-    vine.object({
-      ...this.baseSchema,
-      email: this.baseSchema.email.optional(),
-      password: this.baseSchema.password.optional(),
-      username: vine.string().minLength(50).optional(),
-    })
-  )
-
-  public login = vine.compile(
-    vine.object({
-      email: this.baseSchema.email.optional(),
-      username: vine.string().minLength(50).optional(),
-      password: this.baseSchema.password,
-    })
-  )
+class UsersValidator {
+  public create = vine.compile(createUserSchema)
+  public update = vine.compile(updateUserSchema)
+  public login = vine.compile(loginUserSchema)
 }
 
 vine.messagesProvider = new SimpleMessagesProvider({
-  // USERNAME
   'username.required': 'Username cannot be empty',
   'username.string': 'Username must be a valid text',
   'username.maxLength': 'Username is too long (max 50 characters)',
 
-  // EMAIL
   'email.required': 'Email cannot be empty',
   'email.email': 'Email format is invalid',
 
-  // PASSWORD
   'password.required': 'Password is required',
   'password.minLength': 'Password must contain at least 6 characters',
 
-  // ROLE
   'role.enum': 'Invalid role type',
 })
+
+export default new UsersValidator()

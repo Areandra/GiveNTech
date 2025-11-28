@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 import { FieldContext } from '@vinejs/vine/types'
 
-function checkIsAdmin(role: any) {
+export function checkIsAdmin(role: any) {
   if (!role) {
     throw new Error(
       `[Validator Error] Rule 'isAdmin' called but 'meta.user_role' is missing.
@@ -12,7 +12,7 @@ function checkIsAdmin(role: any) {
        })`
     )
   }
-  return ['super_admin'].includes(role)
+  return ['admin'].includes(role)
 }
 
 async function isAdmin(value: unknown, _: unknown, field: FieldContext) {
@@ -25,20 +25,5 @@ async function isAdmin(value: unknown, _: unknown, field: FieldContext) {
   }
 }
 
-async function isAdminExcept(value: unknown, options: string[], field: FieldContext) {
-  if (typeof value !== 'string') return
-  const userRole = field.meta?.userRole
-
-  const isAdminUser = checkIsAdmin(userRole)
-
-  if (!isAdminUser && !options.includes(value)) {
-    field.report(
-      `You are not authorized to set this field with value "${value}". Allowed: ${options.join(', ')}`,
-      'isAdminExceptValue',
-      field
-    )
-  }
-}
-
-export const isAdminRule = vine.createRule(isAdmin)
-export const isAdminExceptRule = vine.createRule(isAdminExcept)
+const isAdminRule = vine.createRule(isAdmin)
+export default isAdminRule;

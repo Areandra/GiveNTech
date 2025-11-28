@@ -1,7 +1,7 @@
 import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
 
-export default class UserService {
+class UserService {
   /**
    * List users with pagination
    */
@@ -71,3 +71,5 @@ export default class UserService {
     return { user, token }
   }
 }
+
+export default new UserService()

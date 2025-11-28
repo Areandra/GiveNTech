@@ -1,57 +1,9 @@
+import { createBookingSchema, updateBookingSchema } from '#schemas/booking_schema'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
-import { isAdminExceptRule } from './rules/is_admin.js'
 
-export default class BookingsValidator {
-  private baseSchema = {
-    idUser: vine
-      .number()
-      .exists({
-        table: 'users',
-        column: 'id',
-      })
-      .optional(),
-
-    idFacility: vine.number().exists({
-      table: 'facilities',
-      column: 'id',
-    }),
-
-    idApprover: vine
-      .number()
-      .exists({
-        table: 'users',
-        column: 'id',
-      })
-      .optional(),
-
-    roomNumber: vine.string().maxLength(50).optional(),
-
-    bookingDate: vine
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)
-      .optional(),
-
-    returnDate: vine
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)
-      .optional(),
-
-    status: vine
-      .enum(['Pending', 'Confirmed', 'Picked Up', 'Returned', 'Cancelled', 'Penalized', 'Done'])
-      .use(isAdminExceptRule(['Pending', 'Cancelled']))
-      .optional(),
-  }
-
-  public create = vine.compile(vine.object({ idFacility: this.baseSchema.idFacility }))
-
-  public update = vine.compile(
-    vine.object({
-      idApprover: this.baseSchema.idApprover.optional(),
-      roomNumber: this.baseSchema.roomNumber.optional(),
-      returnDate: this.baseSchema.returnDate.optional(),
-      status: this.baseSchema.status.optional(),
-    })
-  )
+class BookingsValidator {
+  public create = vine.compile(createBookingSchema)
+  public update = vine.compile(updateBookingSchema)
 }
 
 vine.messagesProvider = new SimpleMessagesProvider({
@@ -67,8 +19,9 @@ vine.messagesProvider = new SimpleMessagesProvider({
 
   'roomNumber.maxLength': 'Room number is too long (max 50 characters)',
 
-  'bookingDate.regex': 'Invalid booking date format',
-  'returnDate.regex': 'Invalid return date format',
+  'returnDate.regex': 'Invalid return date format. Use YYYY-MM-DDTHH:MM:SS format.',
 
-  'status.enum': 'Invalid booking status',
+  'status.enum': 'Invalid booking status. Allowed values: Pending, Confirmed, Picked Up, Returned, Cancelled, Penalized, Done.',
 })
+
+export default new BookingsValidator()

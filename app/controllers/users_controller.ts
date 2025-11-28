@@ -2,25 +2,14 @@ import User from '#models/user'
 import UserService from '#services/user_service'
 import UsersValidator from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
+import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
 
 export default class UsersController {
-  service = new UserService()
-  validator = new UsersValidator()
-
-  private async checkUserAcsess(user: User, id: number, callback: () => void) {
-    const userTarget = await this.service.getUser(id)
-
-    const isSelf = user === userTarget
-    const isSuperAdmin = user.role !== 'super_admin'
-
-    if (!isSelf || !isSuperAdmin) {
-      return callback()
-    }
-  }
-
+  @ApiOperation({ summary: 'List All User' })
+  @ApiResponse({ type: [User] })
   async index(ctx: HttpContext) {
     const page = await ctx.request.input('page', 1)
-    const data = await this.service.listUsers(page)
+    const data = await UserService.listUsers(page)
 
     ctx.response.ok({
       succses: true,
@@ -29,17 +18,11 @@ export default class UsersController {
     })
   }
 
+  @ApiOperation({ summary: 'Get User by ID' })
+  @ApiResponse({ type: User })
   async show(ctx: HttpContext) {
     const id = await ctx.params.id
-
-    this.checkUserAcsess(ctx.auth.user!, id, () =>
-      ctx.response.forbidden({
-        succses: false,
-        messege: 'You are not authorized to get this account',
-      })
-    )
-
-    const data = await this.service.getUser(id)
+    const data = await UserService.getUser(id)
 
     ctx.response.ok({
       succses: true,
@@ -48,39 +31,28 @@ export default class UsersController {
     })
   }
 
+  @ApiOperation({ summary: 'Destroy User' })
+  @ApiResponse({ type: [User] })
   async destroy(ctx: HttpContext) {
     const id = ctx.params.id
 
-    this.checkUserAcsess(ctx.auth.user!, id, () =>
-      ctx.response.forbidden({
-        succses: false,
-        messege: 'You are not authorized to delete this account',
-      })
-    )
-
-    await this.service.deleteUser(id)
+    await UserService.deleteUser(id)
     ctx.response.ok({
       succses: true,
       message: 'Account deleted',
     })
   }
 
+  @ApiOperation({ summary: 'Update User' })
   async update(ctx: HttpContext) {
     const id = ctx.params.id
-    const body = await ctx.request.validateUsing(this.validator.update, {
+    const body = await ctx.request.validateUsing(UsersValidator.update, {
       meta: {
         userRole: ctx.auth.user?.role || 'user',
       },
     })
 
-    this.checkUserAcsess(ctx.auth.user!, id, () =>
-      ctx.response.forbidden({
-        succses: false,
-        messege: 'You are not authorized to update this account',
-      })
-    )
-
-    await this.service.updateUser(id, body)
+    await UserService.updateUser(id, body)
 
     ctx.response.ok({
       succses: true,
@@ -88,13 +60,15 @@ export default class UsersController {
     })
   }
 
+  @ApiOperation({ summary: 'Create or Register New User' })
+  @ApiResponse({ type: [User] })
   async store(ctx: HttpContext) {
-    const body = await ctx.request.validateUsing(this.validator.create, {
+    const body = await ctx.request.validateUsing(UsersValidator.create, {
       meta: {
         userRole: ctx.auth.user?.role || 'user',
       },
     })
-    const data = await this.service.createUser(body, ctx)
+    const data = await UserService.createUser(body, ctx)
 
     ctx.response.ok({
       succses: true,
@@ -104,9 +78,11 @@ export default class UsersController {
     })
   }
 
+  @ApiOperation({ summary: 'Get New User Acsess Token' })
+  @ApiResponse({ type: [User] })
   async login(ctx: HttpContext) {
-    const body = await ctx.request.validateUsing(this.validator.login)
-    const data = await this.service.getUserByCredential(body, ctx)
+    const body = await ctx.request.validateUsing(UsersValidator.login)
+    const data = await UserService.getUserByCredential(body, ctx)
 
     ctx.response.ok({
       succses: true,

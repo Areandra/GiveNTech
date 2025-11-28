@@ -7,6 +7,7 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Booking from './booking.js'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { ApiProperty } from '@foadonis/openapi/decorators'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -16,14 +17,17 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 @ObjectType()
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
+  @ApiProperty()
   @Field(() => ID)
   declare id: number
 
   @column()
+  @ApiProperty()
   @Field(() => String)
   declare username: string
 
   @column()
+  @ApiProperty()
   @Field()
   declare email: string
 
@@ -32,19 +36,23 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   @Field()
-  declare role: 'super_admin' | 'admin' | 'user'
+  @ApiProperty({ enum: ['admin', 'user'] })
+  declare role: 'admin' | 'user'
 
   @column.dateTime({ autoCreate: true })
   @Field()
+  @ApiProperty()
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   @Field(() => DateTime, { nullable: true })
+  @ApiProperty({ type: 'string' })
   declare updatedAt: DateTime | null
 
   @hasMany(() => Booking, {
     foreignKey: 'idUser',
   })
+  @ApiProperty({ type: () => [Booking] })
   declare bookings: HasMany<typeof Booking>
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
