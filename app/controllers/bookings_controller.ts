@@ -20,7 +20,7 @@ export default class BookingsController {
   })
   async index(ctx: HttpContext) {
     const page = await ctx.request.input('page', 1)
-    const data = await BookingService.listBookings(page)
+    const data = await BookingService.getBookings({ page })
 
     ctx.response.ok({
       succses: true,
@@ -68,7 +68,7 @@ export default class BookingsController {
   })
   async store(ctx: HttpContext) {
     const body = await ctx.request.validateUsing(BookingCreate)
-    await BookingService.createBooking(ctx.auth.user!.id, body)
+    await BookingService.createBooking(body)
 
     ctx.response.ok({
       succses: true,
@@ -127,4 +127,26 @@ export default class BookingsController {
       message: 'Booking deleted',
     })
   }
+
+  // @ApiOperation({ summary: 'Get Booking with id' })
+  // @ApiResponse({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       success: { type: 'boolean', example: 'true' },
+  //       message: { type: 'string', example: 'Booking with id 1 has found' },
+  //       data: { $ref: '#/components/schemas/Booking' },
+  //     },
+  //   },
+  // })
+  // async qr(ctx: HttpContext) {
+  //   const id = await ctx.params.id
+  //   const data = await BookingService.getBooking(id)
+
+  //   ctx.response.ok({
+  //     succses: true,
+  //     message: `Booking with id ${id} has found`,
+  //     data,
+  //   })
+  // }
 }

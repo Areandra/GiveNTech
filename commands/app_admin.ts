@@ -113,7 +113,7 @@ export default class AdminCommand extends BaseCommand {
   }
 
   private async findUserByIdentifier(identifier: string) {
-    if (!isNaN(Number(identifier))) {
+    if (!Number.isNaN(Number(identifier))) {
       return User.find(identifier)
     }
     return User.findBy('email', identifier)

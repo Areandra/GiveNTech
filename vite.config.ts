@@ -1,23 +1,24 @@
 import { defineConfig } from 'vite'
-import { getDirname } from '@adonisjs/core/helpers'
+import adonisjs from '@adonisjs/vite/client'
 import inertia from '@adonisjs/inertia/client'
 import react from '@vitejs/plugin-react'
-import adonisjs from '@adonisjs/vite/client'
 
 export default defineConfig({
   plugins: [
-    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
+    adonisjs({
+      /**
+       * Entrypoints of your application. Each entrypoint will
+       * result in a separate bundle.
+       */
+      entrypoints: ['resources/js/app.js'],
+
+      /**
+       * Paths to watch and reload the browser on file change
+       */
+      reload: ['resources/views/**/*.edge'],
+    }),
     react(),
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
+    inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
   ],
-
-  /**
-   * Define aliases for importing modules from
-   * your frontend code
-   */
-  resolve: {
-    alias: {
-      '~/': `${getDirname(import.meta.url)}/inertia/`,
-    },
-  },
 })

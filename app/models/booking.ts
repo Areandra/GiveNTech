@@ -78,6 +78,6 @@ export default class Booking extends BaseModel {
   declare approver: BelongsTo<typeof User>
 
   @belongsTo(() => Facility, { foreignKey: 'idFacility' })
-  @ApiProperty({type: () => Facility})
+  @ApiProperty({ type: () => Facility })
   declare fasilitas: BelongsTo<typeof Facility>
 }

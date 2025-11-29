@@ -20,7 +20,6 @@ export const updateUserSchema = vine.object({
 })
 
 export const loginUserSchema = vine.object({
-  email: baseUserSchema.email.optional(),
-  username: vine.string().maxLength(50).optional(),
+  email: baseUserSchema.email,
   password: baseUserSchema.password,
 })

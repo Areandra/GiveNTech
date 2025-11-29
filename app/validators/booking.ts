@@ -1,8 +1,13 @@
-import { createBookingSchema, updateBookingSchema } from '#schemas/booking_schema'
+import {
+  createBookingSchema,
+  createMeBookingSchema,
+  updateBookingSchema,
+} from '#schemas/booking_schema'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
 class BookingsValidator {
   public create = vine.compile(createBookingSchema)
+  public createMe = vine.compile(createMeBookingSchema)
   public update = vine.compile(updateBookingSchema)
 }
 
@@ -21,7 +26,8 @@ vine.messagesProvider = new SimpleMessagesProvider({
 
   'returnDate.regex': 'Invalid return date format. Use YYYY-MM-DDTHH:MM:SS format.',
 
-  'status.enum': 'Invalid booking status. Allowed values: Pending, Confirmed, Picked Up, Returned, Cancelled, Penalized, Done.',
+  'status.enum':
+    'Invalid booking status. Allowed values: Pending, Confirmed, Picked Up, Returned, Cancelled, Penalized, Done.',
 })
 
 export default new BookingsValidator()

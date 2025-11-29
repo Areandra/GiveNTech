@@ -18,4 +18,4 @@ async function isAdminExcept(value: unknown, options: string[], field: FieldCont
 }
 
 const isAdminExceptRule = vine.createRule(isAdminExcept)
-export default isAdminExceptRule;
+export default isAdminExceptRule

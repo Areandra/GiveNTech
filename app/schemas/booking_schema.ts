@@ -45,6 +45,11 @@ export const baseBookingSchema = {
 }
 
 export const createBookingSchema = vine.object({
+  idUser: baseBookingSchema.idUser.optional(),
+  idFacility: baseBookingSchema.idFacility,
+})
+
+export const createMeBookingSchema = vine.object({
   idFacility: baseBookingSchema.idFacility,
 })
 

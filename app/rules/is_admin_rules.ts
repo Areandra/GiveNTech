@@ -26,4 +26,4 @@ async function isAdmin(value: unknown, _: unknown, field: FieldContext) {
 }
 
 const isAdminRule = vine.createRule(isAdmin)
-export default isAdminRule;
+export default isAdminRule

@@ -62,7 +62,6 @@ test.group('Deployment Test', () => {
       .json({ name: 'Facility Updated' })
 
     update.assertStatus(200)
-
   })
 
   test('Booking endpoints respond', async ({ client }) => {

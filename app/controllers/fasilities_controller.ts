@@ -10,7 +10,6 @@ const FacilityUpdate = FacilityValidator.update
 @ApiResponse({ status: 404, description: 'Not Found' })
 export default class FasilitiesController {
   @ApiOperation({ summary: 'List all Facility' })
-  @ApiSecurity('false')
   @ApiResponse({
     status: 200,
 

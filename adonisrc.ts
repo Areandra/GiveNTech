@@ -55,6 +55,7 @@ export default defineConfig({
     () => import('@adonisjs/inertia/inertia_provider'),
     () => import('@foadonis/graphql/graphql_provider'),
     () => import('@foadonis/openapi/openapi_provider'),
+    () => import('@adonisjs/ally/ally_provider'),
   ],
 
   /*

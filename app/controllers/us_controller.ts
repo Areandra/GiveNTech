@@ -1,29 +1,22 @@
-import Booking from '#models/booking'
 import User from '#models/user'
 import BookingService from '#services/booking_service'
 import UserService from '#services/user_service'
 import BookingsValidator from '#validators/booking'
+import UsersValidator from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
-import { ApiBody, ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/openapi/decorators'
 
+const MeCreateBooking = BookingsValidator.createMe
+const BookingUpdate = BookingsValidator.update
+@ApiSecurity('BearerAuth')
 export default class UsController {
-  private async checkUserAcsess(user: User, id: number, callback: () => void) {
-    const userTarget = await UserService.getUser(id)
-
-    const isSelf = user === userTarget
-    const isSuperAdmin = user.role !== 'admin'
-
-    if (!isSelf || !isSuperAdmin) {
-      return callback()
-    }
-  }
-
-  @ApiOperation({ summary: 'Get User by ID' })
+  @ApiOperation({ summary: 'Get ME' })
   @ApiResponse({ type: User })
   async me(ctx: HttpContext) {
-    const id = ctx.auth.user!.id
+    const user = ctx.auth.user!
 
-    const data = await UserService.getUser(id)
+    console.log(user)
+    const data = await UserService.getUserByCredential({ email: user.email }, ctx, false)
 
     ctx.response.ok({
       succses: true,
@@ -32,7 +25,36 @@ export default class UsController {
     })
   }
 
-  @ApiOperation({ summary: 'List all Bookings' })
+  @ApiOperation({ summary: 'Destroy Me' })
+  @ApiResponse({ type: [User] })
+  async destroyMe(ctx: HttpContext) {
+    const id = ctx.auth.user!.id
+
+    await UserService.deleteUser(id)
+    ctx.response.ok({
+      succses: true,
+      message: 'Account deleted',
+    })
+  }
+
+  @ApiOperation({ summary: 'Update Me' })
+  async updateMe(ctx: HttpContext) {
+    const id = ctx.auth.user!.id
+    const body = await ctx.request.validateUsing(UsersValidator.update, {
+      meta: {
+        userRole: ctx.auth.user?.role || 'user',
+      },
+    })
+
+    await UserService.updateUser(id, body)
+
+    ctx.response.ok({
+      succses: true,
+      message: 'Profile updated',
+    })
+  }
+
+  @ApiOperation({ summary: 'List Me Bookings' })
   @ApiResponse({
     schema: {
       type: 'object',
@@ -46,7 +68,7 @@ export default class UsController {
   async listBookings(ctx: HttpContext) {
     const page = await ctx.request.input('page', 1)
     const userId = ctx.auth.user!.id
-    const data = await BookingService.meListBookings(userId, page)
+    const data = await BookingService.getBookings({ userId: userId, page })
 
     ctx.response.ok({
       succses: true,
@@ -56,17 +78,20 @@ export default class UsController {
   }
 
   @ApiOperation({ summary: 'Get Booking with id' })
-  @ApiResponse({ type: Booking })
-  async show(ctx: HttpContext) {
+  @ApiResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        data: { $ref: '#/components/schemas/Booking' },
+      },
+    },
+  })
+  async getBooking(ctx: HttpContext) {
     const id = await ctx.params.id
 
-    this.checkUserAcsess(ctx.auth.user!, id, () =>
-      ctx.response.forbidden({
-        succses: false,
-        messege: 'You are not authorized to see this booking',
-      })
-    )
-    const data = await BookingService.getBooking(id)
+    const data = await BookingService.getBooking(id, ctx.auth.user!.id)
 
     ctx.response.ok({
       succses: true,
@@ -76,7 +101,7 @@ export default class UsController {
   }
 
   @ApiOperation({ summary: 'Create Booking' })
-  @ApiBody({ type: () => BookingsValidator.create })
+  @ApiBody({ type: () => MeCreateBooking })
   @ApiResponse({
     schema: {
       type: 'object',
@@ -90,9 +115,9 @@ export default class UsController {
 }`,
     },
   })
-  async store(ctx: HttpContext) {
+  async createBooking(ctx: HttpContext) {
     const body = await ctx.request.validateUsing(BookingsValidator.create)
-    await BookingService.createBooking(ctx.auth.user!.id, body)
+    await BookingService.createBooking(body, ctx.auth.user!.id)
 
     ctx.response.ok({
       succses: true,
@@ -101,7 +126,7 @@ export default class UsController {
   }
 
   @ApiOperation({ summary: 'Update Booking' })
-  @ApiBody({ type: () => BookingsValidator.update })
+  @ApiBody({ type: () => BookingUpdate })
   @ApiResponse({
     schema: {
       type: 'object',
@@ -115,13 +140,17 @@ export default class UsController {
 }`,
     },
   })
-  async update(ctx: HttpContext) {
+  async updateBooking(ctx: HttpContext) {
     const id = ctx.params.id
 
-    const body = await ctx.request.validateUsing(BookingsValidator.update)
-    await BookingService.updateBooking(id, {
-      ...body,
-    })
+    const body = await ctx.request.validateUsing(BookingUpdate)
+    await BookingService.updateBooking(
+      id,
+      {
+        ...body,
+      },
+      ctx.auth.user!.id
+    )
 
     ctx.response.ok({
       succses: true,
@@ -143,9 +172,9 @@ export default class UsController {
 }`,
     },
   })
-  async destroy(ctx: HttpContext) {
+  async destroyBooking(ctx: HttpContext) {
     const id = ctx.params.id
-    await BookingService.deleteBooking(id)
+    await BookingService.deleteBooking(id, ctx.auth.user!.id)
 
     ctx.response.ok({
       succses: true,

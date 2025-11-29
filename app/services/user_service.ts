@@ -2,42 +2,36 @@ import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
 
 class UserService {
-  /**
-   * List users with pagination
-   */
+  private userQuery(userId?: number) {
+    let query = User.query().preload('bookings')
+    if (userId) query = query.where('id', userId)
+    return query
+  }
+
   public async listUsers(page = 1) {
     return User.query().paginate(page)
   }
 
-  /**
-   * Create new user
-   */
   public async createUser(userData: Partial<User>, ctx: HttpContext) {
     const user = await User.create(userData)
+    if (!user) throw new Error('User not found')
+
     const token = await ctx.auth.use('api').createToken(user, [], {
       expiresIn: '7 days',
     })
 
-    if (!user) throw new Error('User not found')
     return { user, token }
   }
 
-  /**
-   * Update user data
-   */
   public async updateUser(userId: number, updateData: Partial<User>) {
     const user = await User.find(userId)
     if (!user) throw new Error('User not found')
 
     user.merge(updateData)
     await user.save()
-
     return user
   }
 
-  /**
-   * Delete user
-   */
   public async deleteUser(userId: number) {
     const user = await User.find(userId)
     if (!user) throw new Error('User not found')
@@ -46,29 +40,36 @@ class UserService {
     return user
   }
 
-  /**
-   * Get user with bookings
-   */
-  public async getUser(userId: number) {
-    const user = await User.query().where('id', userId).preload('bookings').first()
-
+  public async getUser(userId: number, meId?: number) {
+    const user = await this.userQuery(meId || userId).first()
     if (!user) throw new Error('User not found')
+    if (meId && user.id !== meId) throw new Error('Unauthorized')
+
     return user
   }
 
-  public async getUserByCredential(credentials: any, ctx: HttpContext) {
-    const user = await User.verifyCredentials(
-      credentials.email || credentials.username,
-      credentials.password
-    )
-    user.load('bookings')
-
-    const token = await ctx.auth.use('api').createToken(user, [], {
-      expiresIn: '7 days',
-    })
-
+  public async getUserByCredential(
+    credentials: { email: string; password?: string },
+    ctx: HttpContext,
+    createToken = true
+  ) {
+    let user
+    if (credentials.password)
+      user = await User.verifyCredentials(credentials.email, credentials.password)
+    else user = await User.findByOrFail('email', credentials.email)
     if (!user) throw new Error('User not found')
-    return { user, token }
+
+    await user.load('bookings')
+
+    if (createToken) {
+      const token = await ctx.auth.use('api').createToken(user, [], {
+        expiresIn: '7 days',
+      })
+
+      return { user, token }
+    }
+
+    return { user }
   }
 }
 
