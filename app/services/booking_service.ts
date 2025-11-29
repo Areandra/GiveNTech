@@ -3,7 +3,7 @@ import Facility from '#models/facility'
 class BookingService {
 
   public async listBookings(page = 1) {
-    return Booking.query().preload('user').preload('fasilitas').paginate(page)
+    return Booking.query().preload('user').preload('fasilitas').preload('rooms').paginate(page)
   }
 
   public async meListBookings(userId: number ,page = 1) {
