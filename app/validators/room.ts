@@ -6,7 +6,7 @@ class RoomsValidator {
    * Skema kompilasi untuk validasi saat membuat Room (POST)
    */
   public create = vine.compile(createRoomSchema)
-  
+
   /**
    * Skema kompilasi untuk validasi saat memperbarui Room (PUT/PATCH)
    */

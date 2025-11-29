@@ -1,9 +1,5 @@
 import { DateTime } from 'luxon'
-import {
-  BaseModel,
-  column,
-  hasMany
-} from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Booking from './booking.js'
 import { ApiProperty } from '@foadonis/openapi/decorators'
@@ -36,6 +32,6 @@ export default class Room extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Booking, { foreignKey: 'idRoom' })
-  @ApiProperty({type:() => Booking})
+  @ApiProperty({ type: () => Booking })
   declare bookings: HasMany<typeof Booking>
 }

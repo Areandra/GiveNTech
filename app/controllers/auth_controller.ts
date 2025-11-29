@@ -84,12 +84,11 @@ export default class AuthController {
     })
   }
 
-  @ApiOperation({ summary: 'Google OAuth2 Redirect (API)' })
+  @ApiOperation({ summary: 'Google OAuth2 (API Token)' })
   oauth2(ctx: HttpContext) {
     return ctx.ally.use('google').redirect()
   }
 
-  @ApiOperation({ summary: 'Google OAuth2 Callback (API)' })
   async oauth2Callback(ctx: HttpContext) {
     const provider = ctx.ally.use('google')
     const userData = await provider.user()

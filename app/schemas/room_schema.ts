@@ -6,24 +6,18 @@ import vine from '@vinejs/vine'
 // Definisi aturan validasi untuk field-field di Model Room
 export const baseRoomSchema = {
   // roomName (roomName di Model.ts)
-  roomName: vine
-    .string()
-    .maxLength(100), // Batas panjang yang wajar
+  roomName: vine.string().maxLength(100), // Batas panjang yang wajar
 
   // longitude (Wajib ada, harus berupa angka)
   // Rentang Longitude: -180 sampai 180 (untuk koordinat geografis yang valid)
-  longitude: vine
-    .number()
-    .range([-180, 180]),
+  longitude: vine.number().range([-180, 180]),
 
   // latitude (Wajib ada, harus berupa angka)
   // Rentang Latitude: -90 sampai 90 (untuk koordinat geografis yang valid)
-  latitude: vine
-    .number()
-    .range([-90, 90]),
+  latitude: vine.number().range([-90, 90]),
 
   // Tambahkan field opsional lainnya jika ada di tabel, misalnya 'description'
-  // description: vine.string().maxLength(255).optional(), 
+  // description: vine.string().maxLength(255).optional(),
 }
 
 // --- 2. Create Room Schema ---

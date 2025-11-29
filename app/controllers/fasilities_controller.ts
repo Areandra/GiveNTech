@@ -56,7 +56,7 @@ export default class FasilitiesController {
     })
   }
 
-  @ApiOperation({ summary: 'Create all Facility' })
+  @ApiOperation({ summary: 'Create Facility' })
   @ApiBody({ type: () => FacilityCreate })
   @ApiResponse({
     status: 200,

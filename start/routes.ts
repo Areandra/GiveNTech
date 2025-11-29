@@ -14,16 +14,17 @@ const FasilitiesController = () => import('#controllers/fasilities_controller')
 const UsersController = () => import('#controllers/users_controller')
 const BookingsController = () => import('#controllers/bookings_controller')
 const UsController = () => import('#controllers/us_controller')
-const ViewsController = () => import('#controllers/views_controller')
 const RoomsController = () => import('#controllers/rooms_controller')
 router.on('/home').renderInertia('home')
 
 router.group(() => {
-  router.get('/login/oauth/google', [AuthController, 'oauth2Session'])
-  router.get('/login/oauth/google/callback', [AuthController, 'oauth2SessionCallback'])
-  router.get('/login', [ViewsController, 'login'])
-  router.get('/register', [ViewsController, 'register'])
-  router.get('/facilities', [ViewsController, 'facility'])
+  router.get('/login/oauth/google', '#controllers/auth_controller.oauth2Session')
+  router.get('/login/oauth/google/callback', '#controllers/auth_controller.oauth2SessionCallback')
+  router.get('/login', '#controllers/views_controller.login')
+  router.get('/register', '#controllers/views_controller.register')
+  router.get('/facilities', '#controllers/views_controller.facility')
+  router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
+  router.get('/qrReader', '#controllers/views_controller.qrReader')
 })
 
 router
@@ -32,7 +33,7 @@ router
   })
   .prefix('/auth')
 router.get('/oauth/google/token', [AuthController, 'oauth2'])
-router.get('/oauth/google/token/callback', [AuthController, 'oauth2Callback'])
+router.get('/oauth/google/token/callback', '#controllers/auth_controller.oauth2Callback')
 
 router
   .group(() => {
@@ -61,8 +62,8 @@ router
           .apiOnly()
           .except(['index', 'show'])
           .use('*', middleware.roleBasedAcsess(['admin']))
-
         router.resource('/room', RoomsController).apiOnly().only(['index', 'show'])
+        router.get('/room/mapData', [RoomsController, 'mapData'])
 
         router
           .group(() => {
@@ -95,8 +96,3 @@ router.get('/redirect/*', async ({ params, response }) => {
   const path = params['*']
   return response.redirect(`/${path}`)
 })
-
-router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
-router.get('/qrReader', '#controllers/views_controller.qrReader')
-
-router.on('/').renderInertia('home')
