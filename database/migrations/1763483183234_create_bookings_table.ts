@@ -27,7 +27,13 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('facilities')
         .onDelete('CASCADE')
-      table.string('room_number', 50).nullable()
+      table
+        .integer('id_room')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('rooms')
+        .onDelete('SET NULL')
       table.date('booking_date').notNullable()
       table.date('return_date').nullable()
       table

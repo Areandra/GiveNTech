@@ -5,6 +5,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { Field, ID, Int, ObjectType } from '@foadonis/graphql'
 import Facility from './facility.js'
 import { ApiProperty } from '@foadonis/openapi/decorators'
+import Room from './room.js'
 
 @ObjectType()
 export default class Booking extends BaseModel {
@@ -31,18 +32,18 @@ export default class Booking extends BaseModel {
   declare idApprover?: number
 
   @column()
-  @Field()
-  @ApiProperty({ example: 'SG6' })
-  declare roomNumber?: string
+  @Field(() => Int)
+  @ApiProperty({ required: false })
+  declare idRoom?: number
 
-  @column.dateTime({ autoCreate: true })
+  @column.date()
   @Field()
-  @ApiProperty({ example: '2025-11-27T14:30:00' })
+  @ApiProperty({ example: '2025-11-27' })
   declare bookingDate: DateTime
 
-  @column()
+  @column.date()
   @Field(() => DateTime)
-  @ApiProperty({ required: false, example: '' })
+  @ApiProperty({ required: false })
   declare returnDate?: DateTime
 
   @column()
@@ -80,4 +81,8 @@ export default class Booking extends BaseModel {
   @belongsTo(() => Facility, { foreignKey: 'idFacility' })
   @ApiProperty({ type: () => Facility })
   declare fasilitas: BelongsTo<typeof Facility>
+
+  @belongsTo(() => Room, { foreignKey: 'idRoom' })
+  @ApiProperty({ type: () => Room })
+  declare rooms: BelongsTo<typeof Room>
 }

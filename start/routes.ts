@@ -15,6 +15,7 @@ const UsersController = () => import('#controllers/users_controller')
 const BookingsController = () => import('#controllers/bookings_controller')
 const UsController = () => import('#controllers/us_controller')
 const ViewsController = () => import('#controllers/views_controller')
+const RoomsController = () => import('#controllers/rooms_controller')
 router.on('/home').renderInertia('home')
 
 router.group(() => {
@@ -43,15 +44,26 @@ router
           .except(['index', 'show'])
           .use('*', middleware.roleBasedAcsess(['admin']))
         router.resource('/facility', FasilitiesController).apiOnly().only(['index', 'show'])
+
         router
           .resource('/booking', BookingsController)
           .apiOnly()
           .use('*', middleware.roleBasedAcsess(['admin']))
+
         router
           .resource('/user', UsersController)
           .apiOnly()
           .except(['store'])
           .use('index', middleware.roleBasedAcsess(['admin']))
+
+        router
+          .resource('/room', RoomsController)
+          .apiOnly()
+          .except(['index', 'show'])
+          .use('*', middleware.roleBasedAcsess(['admin']))
+
+        router.resource('/room', RoomsController).apiOnly().only(['index', 'show'])
+
         router
           .group(() => {
             router.get('/', [UsController, 'me'])

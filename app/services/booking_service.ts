@@ -3,7 +3,7 @@ import Facility from '#models/facility'
 
 class BookingService {
   private bookingQuery(userId?: number) {
-    let query = Booking.query().preload('user').preload('fasilitas').preload('approver')
+    let query = Booking.query().preload('user').preload('fasilitas').preload('approver').preload('rooms')
     if (userId) query = query.where('idUser', userId)
     return query
   }

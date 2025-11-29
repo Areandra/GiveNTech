@@ -25,7 +25,11 @@ export const baseBookingSchema = {
     .use(isAdminRule())
     .optional(),
 
-  roomNumber: vine.string().maxLength(50).optional(),
+  // roomNumber: vine.string().maxLength(50).optional(),
+  idRoom: vine.number().exists({
+    table: 'rooms',
+    column: 'id',
+  }),
 
   bookingDate: vine
     .string()
@@ -51,6 +55,7 @@ export const createBookingSchema = vine.object({
 
 export const createMeBookingSchema = vine.object({
   idFacility: baseBookingSchema.idFacility,
+  idRoom: baseBookingSchema.idRoom
 })
 
 export const updateBookingSchema = vine.object({
@@ -60,5 +65,5 @@ export const updateBookingSchema = vine.object({
   returnDate: baseBookingSchema.returnDate,
   status: baseBookingSchema.status,
 
-  roomNumber: baseBookingSchema.roomNumber,
+  idRoom: baseBookingSchema.idRoom,
 })
