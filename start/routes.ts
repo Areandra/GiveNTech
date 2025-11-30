@@ -25,6 +25,7 @@ router.group(() => {
   router.get('/facilities', '#controllers/views_controller.facility')
   router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
   router.get('/qrReader', '#controllers/views_controller.qrReader')
+  router.get('/map', '#controllers/views_controller.map')
 })
 
 router
