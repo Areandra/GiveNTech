@@ -30,4 +30,8 @@ export default class ViewsController {
   async qrReader({ inertia }: HttpContext) {
     return inertia.render('qrcodeReader')
   }
+
+  async map({ inertia }: HttpContext) {
+    return inertia.render('map')
+  }
 }

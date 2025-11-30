@@ -8,3 +8,18 @@ body {
   height: 100%;
   width: 100%;
 }
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+.custom-map-icon {
+  background: none;
+  border: none;
+}
+
+.custom-map-icon div {
+  line-height: 1;
+  text-align: center;
+}
