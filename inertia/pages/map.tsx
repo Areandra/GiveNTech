@@ -58,7 +58,7 @@ export default function MapPage() {
     const [error, setError] = useState<string | null>(null)
 
     // Koordinat default (misalnya, di tengah Indonesia atau lokasi kampus)
-    const defaultCenter: L.LatLngTuple = [-0.8587123, 119.8970034]
+    const defaultCenter: L.LatLngTuple = [-0.8416396128141402, 119.89278946944664]
 
     const fetchMapData = async () => {
         setLoading(true)
