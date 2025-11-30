@@ -9,16 +9,20 @@ body {
   width: 100%;
 }
 
+/* --- Styling untuk Leaflet Map (PENTING: Diperlukan agar peta terlihat) --- */
 .leaflet-container {
+  /* Memastikan container peta mengambil tinggi penuh */
   height: 100%;
   width: 100%;
 }
 
 .custom-map-icon {
+  /* Menghilangkan background/border default pada divIcon Leaflet */
   background: none;
   border: none;
 }
 
+/* Optional: Untuk memastikan tampilan teks di marker kustom tidak diwarisi dari Leaflet */
 .custom-map-icon div {
   line-height: 1;
   text-align: center;
