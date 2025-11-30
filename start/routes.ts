@@ -15,16 +15,20 @@ const UsersController = () => import('#controllers/users_controller')
 const BookingsController = () => import('#controllers/bookings_controller')
 const UsController = () => import('#controllers/us_controller')
 const RoomsController = () => import('#controllers/rooms_controller')
-router.on('/home').renderInertia('home')
+router.on('/').redirect('/facilities')
 
 router.group(() => {
   router.get('/login/oauth/google', '#controllers/auth_controller.oauth2Session')
   router.get('/login/oauth/google/callback', '#controllers/auth_controller.oauth2SessionCallback')
   router.get('/login', '#controllers/views_controller.login')
   router.get('/register', '#controllers/views_controller.register')
-  router.get('/facilities', '#controllers/views_controller.facility')
-  router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
-  router.get('/qrReader', '#controllers/views_controller.qrReader')
+  router
+    .group(() => {
+      router.get('/facilities', '#controllers/views_controller.facility')
+      router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
+      router.get('/qrReader', '#controllers/views_controller.qrReader')
+    })
+    .use(middleware.auth({ guards: ['web'] }))
 })
 
 router
