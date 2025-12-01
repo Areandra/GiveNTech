@@ -74,7 +74,6 @@ const DynamicMap: React.FC<DynamicMapProps> = ({ validMarkers, mapCenter }) => {
             <p className="text-sm font-medium text-gray-800">
               Total Item Dipinjam: <span className="ml-1 font-bold">{room.borrowed_facilities_count}</span>
             </p>
-
             {room.active_bookings.length > 0 && (
               <div className="mt-3 border-t pt-2 max-h-32 overflow-y-auto">
                 <h4 className="text-xs font-bold uppercase text-gray-500 mb-1">Detail Peminjaman Aktif:</h4>
@@ -96,5 +95,4 @@ const DynamicMap: React.FC<DynamicMapProps> = ({ validMarkers, mapCenter }) => {
     </MapContainer>
   )
 }
-
 export default DynamicMap
