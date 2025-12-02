@@ -25,15 +25,36 @@ const DynamicMap: React.FC<DynamicMapProps> = ({ validMarkers, mapCenter }) => {
   const [LeafletComponents, setLeafletComponents] = useState<any>(null)
   const [L, setL] = useState<any>(null)
 
+  // useEffect(() => {
+  //   Promise.all([
+  //     import('react-leaflet'),
+  //     import('leaflet/dist/leaflet.css'),
+  //     import('leaflet'),
+  //   ]).then(([reactLeaflet, _leafletCSS, leaflet]) => {
+  //     setLeafletComponents(reactLeaflet)
+  //     setL(leaflet)
+  //   })
+  // }, [])
+
   useEffect(() => {
-    // Import dinamis Leaflet hanya di client
     Promise.all([
       import('react-leaflet'),
       import('leaflet/dist/leaflet.css'),
-      import('leaflet'),
+      import('leaflet'), 
     ]).then(([reactLeaflet, _leafletCSS, leaflet]) => {
+      
+      const L = leaflet
+      if (L && L.Icon && L.Icon.Default) {
+          delete (L.Icon.Default.prototype as any)._getIconUrl;
+          L.Icon.Default.mergeOptions({
+            iconRetinaUrl: '/assets/marker-icon-2x.png',
+            iconUrl: '/assets/marker-icon.png',
+            shadowUrl: '/assets/marker-shadow.png',
+          });
+      }
+
       setLeafletComponents(reactLeaflet)
-      setL(leaflet)
+      setL(L)
     })
   }, [])
 
@@ -44,10 +65,27 @@ const DynamicMap: React.FC<DynamicMapProps> = ({ validMarkers, mapCenter }) => {
   const { MapContainer, TileLayer, Marker, Popup } = LeafletComponents
 
   // Custom marker
+  // const customIcon = (count: number) => {
+  //   return L.divIcon({
+  //     className: 'custom-map-icon',
+  //     html: `<div class="bg-indigo-600 text-white rounded-full p-2 shadow-lg flex flex-col items-center justify-center font-bold text-xs ring-4 ring-indigo-300 w-10 h-10">
+  //             <span class="text-xs">${count}</span>
+  //             <span class="text-[8px] leading-none">items</span>
+  //           </div>`,
+  //     iconSize: [40, 40],
+  //     iconAnchor: [20, 40],
+  //     popupAnchor: [0, -30],
+  //   })
+  // }
   const customIcon = (count: number) => {
+    // Tentukan warna marker berdasarkan jumlah pinjaman aktif (opsional)
+    const bgColor = count > 5 ? 'bg-red-600' : 'bg-indigo-600'; 
+    const ringColor = count > 5 ? 'ring-red-300' : 'ring-indigo-300';
+    
     return L.divIcon({
       className: 'custom-map-icon',
-      html: `<div class="bg-indigo-600 text-white rounded-full p-2 shadow-lg flex flex-col items-center justify-center font-bold text-xs ring-4 ring-indigo-300 w-10 h-10">
+      // Menggunakan Tailwind CSS untuk marker kustom
+      html: `<div class="${bgColor} text-white rounded-full p-2 shadow-lg flex flex-col items-center justify-center font-bold text-xs ring-4 ${ringColor} w-10 h-10">
               <span class="text-xs">${count}</span>
               <span class="text-[8px] leading-none">items</span>
             </div>`,

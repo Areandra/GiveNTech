@@ -42,7 +42,6 @@ export default function AuthenticatedLayout({ children }: PropsWithChildren) {
     {
       name: 'Map View',
       icon: Map,
-      // PERBAIKAN: Isi href secara eksplisit
       href: '/map',
       active: currentUrl.includes('/map'),
     },

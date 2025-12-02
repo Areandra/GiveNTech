@@ -433,8 +433,8 @@ export default class RoomsController {
         return {
           id: room.id,
           room_name: room.roomName,
-          longitude: room.longitude,
-          latitude: room.latitude,
+          longitude: Number(room.longitude),
+          latitude: Number(room.latitude),
           borrowed_facilities_count: activeBookings.length,
           active_bookings: activeBookings,
         }
