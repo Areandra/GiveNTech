@@ -63,8 +63,8 @@ router
           .apiOnly()
           .except(['index', 'show'])
           .use('*', middleware.roleBasedAcsess(['admin']))
-        router.resource('/room', RoomsController).apiOnly().only(['index', 'show'])
         router.get('/room/mapData', [RoomsController, 'mapData'])
+        router.resource('/room', RoomsController).apiOnly().only(['index', 'show'])
 
         router
           .group(() => {

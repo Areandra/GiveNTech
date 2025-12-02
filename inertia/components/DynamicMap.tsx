@@ -56,28 +56,41 @@ const DynamicMap: React.FC<DynamicMapProps> = ({ validMarkers, mapCenter }) => {
       popupAnchor: [0, -30],
     })
   }
-
+  console.log('tonti', validMarkers)
   return (
-    <MapContainer center={mapCenter} zoom={15} scrollWheelZoom className="h-full w-full rounded-xl" key={mapCenter.toString()}>
+    <MapContainer
+      center={mapCenter}
+      zoom={15}
+      scrollWheelZoom
+      className="h-full w-full rounded-xl"
+      key={mapCenter.toString()}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
       {validMarkers.map((room) => (
-        <Marker key={room.id} position={[room.latitude, room.longitude]} icon={customIcon(room.borrowed_facilities_count)}>
+        <Marker
+          key={room.id}
+          position={[room.latitude, room.longitude]}
+          icon={customIcon(room.borrowed_facilities_count)}
+        >
           <Popup className="max-w-xs">
             <div className="font-semibold text-lg text-indigo-700 mb-2">{room.room_name}</div>
             <p className="text-sm text-gray-600 mb-2">
-              Koordinat: ({room.latitude.toFixed(6)}, {room.longitude.toFixed(6)})
+              Koordinat: ({Number(room.latitude).toFixed(6)}, {Number(room.longitude).toFixed(6)})
             </p>
             <p className="text-sm font-medium text-gray-800">
-              Total Item Dipinjam: <span className="ml-1 font-bold">{room.borrowed_facilities_count}</span>
+              Total Item Dipinjam:{' '}
+              <span className="ml-1 font-bold">{room.borrowed_facilities_count}</span>
             </p>
 
             {room.active_bookings.length > 0 && (
               <div className="mt-3 border-t pt-2 max-h-32 overflow-y-auto">
-                <h4 className="text-xs font-bold uppercase text-gray-500 mb-1">Detail Peminjaman Aktif:</h4>
+                <h4 className="text-xs font-bold uppercase text-gray-500 mb-1">
+                  Detail Peminjaman Aktif:
+                </h4>
                 <ul className="space-y-1">
                   {room.active_bookings.map((booking, index) => (
                     <li key={index} className="text-xs p-1 bg-gray-50 rounded">

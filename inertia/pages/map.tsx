@@ -60,15 +60,16 @@ export default function MapPage() {
 
   // Memoize markers dan center
   const { validMarkers, mapCenter } = useMemo(() => {
-    const currentValidMarkers = mapData?.filter(
-      (room) => room.latitude && room.longitude && room.borrowed_facilities_count > 0
-    ) || []
+    const currentValidMarkers =
+      mapData?.filter(
+        (room) => room.latitude && room.longitude && room.borrowed_facilities_count > 0
+      ) || []
 
     const center: [number, number] =
       currentValidMarkers.length > 0
         ? [currentValidMarkers[0].latitude, currentValidMarkers[0].longitude]
         : defaultCenter
-
+    console.log('anj', mapData)
     return { validMarkers: currentValidMarkers, mapCenter: center }
   }, [mapData])
 
