@@ -65,6 +65,9 @@ export default function MapPage() {
         (room) => room.latitude && room.longitude && room.borrowed_facilities_count > 0
       ) || []
 
+    console.log('Total Marker yang lolos filter:', currentValidMarkers.length);
+    console.log('Marker yang lolos:', currentValidMarkers);
+
     const center: [number, number] =
       currentValidMarkers.length > 0
         ? [currentValidMarkers[0].latitude, currentValidMarkers[0].longitude]

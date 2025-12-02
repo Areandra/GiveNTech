@@ -27,7 +27,7 @@ class BookingService {
       status: bookingData.status || 'Pending',
     })
 
-    facility.status = 'Borrowed'
+    facility.status = 'Booked'
     await facility.save()
 
     return booking
