@@ -197,7 +197,7 @@
 //           room_name: room.roomName,
 //           // Menggunakan nilai yang sudah di-cast
 //           longitude: longitude,
-//           latitude: latitude, 
+//           latitude: latitude,
 //           borrowed_facilities_count: activeBookings.length,
 //           // Memformat active_bookings agar sesuai tipe data frontend
 //           active_bookings: activeBookings.map(b => ({
@@ -218,7 +218,6 @@
 //     })
 //   }
 // }
-
 
 import type { HttpContext } from '@adonisjs/core/http'
 import Room from '#models/room'
