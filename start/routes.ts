@@ -96,3 +96,10 @@ router.get('/redirect/*', async ({ params, response }) => {
   const path = params['*']
   return response.redirect(`/${path}`)
 })
+
+
+router.get('/dashboard', '#controllers/dashboard_controller.index')
+
+router.get('/booking', ({ inertia }) => {
+  return inertia.render('booking')
+})

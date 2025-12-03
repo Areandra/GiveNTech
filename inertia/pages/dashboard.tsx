@@ -1,149 +1,155 @@
 import React, { useState, useEffect } from 'react'
 import { Head, router } from '@inertiajs/react'
 import { 
-  Building,
-  Home,
-  Calendar,
-  MapPin,
+  Building, 
+  MapPin, 
   QrCode,
+  Search,
+  Plus,
   Menu,
   X,
   User,
   ChevronRight,
-  Search,
-  Plus,
+  Home,
+  Calendar,
+  Bell,
+  Eye,
+  Edit,
+  Trash2,
   CheckCircle,
   XCircle,
   Wrench,
-  Edit,
-  Trash2,
-  Eye,
-  Package,
-  AlertCircle
+  Clock
 } from 'lucide-react'
 
-// Tipe data dari API Anda
 interface Facility {
   id: number
   name: string
-  type: string
-  status: 'Available' | 'Booked' | 'Borrowed' | 'Under Inspection' | 'Maintenance' | 'Damaged'
-  createdAt: string
-  updatedAt: string
+  location: string
+  status: 'Available' | 'Booked' | 'Maintenance' | 'Damaged'
+  lastUpdated: string
+  bookedBy?: string
+  bookedTime?: string
 }
 
-const facilities = () => {
+const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [facilitiesData, setFacilitiesData] = useState<Facility[]>([])
+  const [stats, setStats] = useState({
+    totalFacilities: 0,
+    availableFacilities: 0,
+    bookedFacilities: 0,
+    maintenanceFacilities: 0
+  })
+  const [facilities, setFacilities] = useState<Facility[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Menu sidebar
-  const menuItems = [
-    { icon: Home, label: 'Dashboard', href: '/dashboard' },
-    { icon: Calendar, label: 'Booking Management', href: '/booking' },
-    { icon: Building, label: 'Facility Management', active: true, href: '/facilities' },
-    { icon: MapPin, label: 'Map View', href: '/map' },
-    { icon: QrCode, label: 'QR Scanner', href: '/qr-scanner' },
-  ]
-
-  // Fetch data dari API (sama seperti kode Anda)
-  useEffect(() => {
-    const fetchFacilities = async () => {
-      try {
-        // Ganti dengan fetch Inertia atau axios sesuai kebutuhan
-        const response = await fetch('/api/v1/facility')
-        const data = await response.json()
-        console.log('API Response:', data)
-        
-        // Sesuaikan dengan struktur response API Anda
-        if (data.data && data.data.data) {
-          setFacilitiesData(data.data.data)
-        } else {
-          // Fallback ke data dummy jika API belum ready
-          setFacilitiesData(getDummyFacilities())
-        }
-      } catch (err: any) {
-        console.error('Error fetching facilities:', err)
-        setError(err.response?.data?.message || 'Gagal memuat data fasilitas')
-        // Fallback ke data dummy
-        setFacilitiesData(getDummyFacilities())
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchFacilities()
-  }, [])
 
   // Data dummy untuk development
-  const getDummyFacilities = (): Facility[] => [
-    {
-      id: 1,
-      name: 'Aula Konferensi Utama',
-      type: 'Ruang Pertemuan',
-      status: 'Available',
-      createdAt: '2024-01-10T10:30:00Z',
-      updatedAt: '2024-01-15T14:20:00Z'
-    },
-    {
-      id: 2,
-      name: 'Ruang Pelatihan B',
-      type: 'Ruang Pelatihan',
-      status: 'Maintenance',
-      createdAt: '2024-01-05T09:15:00Z',
-      updatedAt: '2024-01-18T11:45:00Z'
-    },
-    {
-      id: 3,
-      name: 'Laboratorium Kimia',
-      type: 'Laboratorium',
-      status: 'Available',
-      createdAt: '2024-01-12T08:30:00Z',
-      updatedAt: '2024-01-16T16:10:00Z'
-    },
-    {
-      id: 4,
-      name: 'Lapangan Olahraga',
-      type: 'Fasilitas Outdoor',
-      status: 'Damaged',
-      createdAt: '2024-01-08T14:00:00Z',
-      updatedAt: '2024-01-19T10:20:00Z'
-    },
-    {
-      id: 5,
-      name: 'Ruang Rapat C',
-      type: 'Ruang Meeting',
-      status: 'Booked',
-      createdAt: '2024-01-15T13:45:00Z',
-      updatedAt: '2024-01-17T09:30:00Z'
-    },
-    {
-      id: 6,
-      name: 'Studio Musik',
-      type: 'Studio',
-      status: 'Available',
-      createdAt: '2024-01-11T11:20:00Z',
-      updatedAt: '2024-01-14T15:40:00Z'
-    },
-    {
-      id: 7,
-      name: 'Perpustakaan Digital',
-      type: 'Ruang Baca',
-      status: 'Under Inspection',
-      createdAt: '2024-01-09T16:25:00Z',
-      updatedAt: '2024-01-20T08:15:00Z'
-    },
-    {
-      id: 8,
-      name: 'Kantin Utama',
-      type: 'Fasilitas Umum',
-      status: 'Available',
-      createdAt: '2024-01-14T12:10:00Z',
-      updatedAt: '2024-01-18T14:55:00Z'
-    },
+  useEffect(() => {
+    // Simulasi fetch data
+    setTimeout(() => {
+      const dummyFacilities: Facility[] = [
+        {
+          id: 1,
+          name: 'Aula Konferensi Utama',
+          location: 'Gedung A, Lantai 3',
+          status: 'Booked',
+          lastUpdated: '2024-01-20T10:30:00Z',
+          bookedBy: 'John Doe',
+          bookedTime: 'Hari ini, 14:00-16:00'
+        },
+        {
+          id: 2,
+          name: 'Ruang Pelatihan B',
+          location: 'Gedung B, Lantai 1',
+          status: 'Maintenance',
+          lastUpdated: '2024-01-19T15:45:00Z',
+          bookedBy: undefined,
+          bookedTime: undefined
+        },
+        {
+          id: 3,
+          name: 'Lapangan Olahraga',
+          location: 'Area Outdoor, Sayap Utara',
+          status: 'Damaged',
+          lastUpdated: '2024-01-18T09:20:00Z',
+          bookedBy: undefined,
+          bookedTime: undefined
+        },
+        {
+          id: 4,
+          name: 'Ruang Rapat C',
+          location: 'Gedung C, Lantai 2',
+          status: 'Available',
+          lastUpdated: '2024-01-20T08:15:00Z',
+          bookedBy: 'Tim Marketing',
+          bookedTime: 'Besok'
+        },
+        {
+          id: 5,
+          name: 'Laboratorium Komputer',
+          location: 'Gedung D, Lantai 2',
+          status: 'Available',
+          lastUpdated: '2024-01-19T14:30:00Z',
+          bookedBy: undefined,
+          bookedTime: undefined
+        },
+        {
+          id: 6,
+          name: 'Studio Musik',
+          location: 'Gedung E, Lantai 1',
+          status: 'Booked',
+          lastUpdated: '2024-01-20T16:20:00Z',
+          bookedBy: 'Klub Musik',
+          bookedTime: 'Hari ini, 18:00-20:00'
+        },
+        {
+          id: 7,
+          name: 'Perpustakaan',
+          location: 'Gedung Utama, Lantai 1',
+          status: 'Available',
+          lastUpdated: '2024-01-19T11:10:00Z',
+          bookedBy: undefined,
+          bookedTime: undefined
+        },
+        {
+          id: 8,
+          name: 'Kantin Utama',
+          location: 'Gedung Utama, Lantai 1',
+          status: 'Maintenance',
+          lastUpdated: '2024-01-20T13:25:00Z',
+          bookedBy: undefined,
+          bookedTime: undefined
+        }
+      ]
+
+      setFacilities(dummyFacilities)
+      
+      // Hitung statistik
+      const total = dummyFacilities.length
+      const available = dummyFacilities.filter(f => f.status === 'Available').length
+      const booked = dummyFacilities.filter(f => f.status === 'Booked').length
+      const maintenance = dummyFacilities.filter(f => f.status === 'Maintenance' || f.status === 'Damaged').length
+      
+      setStats({
+        totalFacilities: total,
+        availableFacilities: available,
+        bookedFacilities: booked,
+        maintenanceFacilities: maintenance
+      })
+      
+      setLoading(false)
+    }, 1000)
+  }, [])
+
+  // Menu sidebar (sama seperti facility)
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', active: true, href: '/dashboard' },
+    { icon: Calendar, label: 'Booking Management', href: '/booking' },
+    { icon: Building, label: 'Facility Management', href: '/facilities' },
+    { icon: MapPin, label: 'Map View', href: '/map' },
+    { icon: QrCode, label: 'QR Scanner', href: '/qr-scanner' },
   ]
 
   const handleMenuClick = (href: string) => {
@@ -151,16 +157,22 @@ const facilities = () => {
     setSidebarOpen(false)
   }
 
+  const handleAddFacility = () => {
+    router.visit('/facilities/create')
+  }
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric'
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
-  // Status badge sesuai dengan tipe data Anda
+  // Status badge
   const getStatusConfig = (status: Facility['status']) => {
     switch(status) {
       case 'Available':
@@ -177,24 +189,10 @@ const facilities = () => {
           icon: <Calendar className="w-3 h-3 mr-1" />,
           label: 'Dipesan'
         }
-      case 'Borrowed':
-        return {
-          bg: 'bg-indigo-100',
-          text: 'text-indigo-800',
-          icon: <Package className="w-3 h-3 mr-1" />,
-          label: 'Dipinjam'
-        }
-      case 'Under Inspection':
+      case 'Maintenance':
         return {
           bg: 'bg-yellow-100',
           text: 'text-yellow-800',
-          icon: <AlertCircle className="w-3 h-3 mr-1" />,
-          label: 'Inspeksi'
-        }
-      case 'Maintenance':
-        return {
-          bg: 'bg-orange-100',
-          text: 'text-orange-800',
           icon: <Wrench className="w-3 h-3 mr-1" />,
           label: 'Perbaikan'
         }
@@ -209,58 +207,28 @@ const facilities = () => {
         return {
           bg: 'bg-gray-100',
           text: 'text-gray-800',
-          icon: <AlertCircle className="w-3 h-3 mr-1" />,
+          icon: <CheckCircle className="w-3 h-3 mr-1" />,
           label: status
         }
     }
   }
 
-  // Performance bar (diambil dari kode Anda)
-  const PerformanceBar = ({ status }: { status: Facility['status'] }) => {
-    const map: Record<Facility['status'], { label: string, color: string, width: string }> = {
-      'Available': { label: 'Good', color: 'bg-green-500', width: '70%' },
-      'Booked': { label: 'Booked', color: 'bg-blue-500', width: '50%' },
-      'Borrowed': { label: 'Borrowed', color: 'bg-indigo-500', width: '40%' },
-      'Under Inspection': { label: 'Inspection', color: 'bg-yellow-500', width: '35%' },
-      'Maintenance': { label: 'Maintenance', color: 'bg-orange-500', width: '30%' },
-      'Damaged': { label: 'Damaged', color: 'bg-red-500', width: '20%' },
-    }
-    const info = map[status]
-    
-    return (
-      <div className="flex items-center space-x-2">
-        <div className="w-16 h-2 bg-gray-200 rounded-full">
-          <div 
-            className={`h-full rounded-full ${info.color}`} 
-            style={{ width: info.width }} 
-          />
-        </div>
-        <span className="text-xs font-medium text-gray-700">{info.label}</span>
-      </div>
-    )
-  }
-
   // Filter facilities
-  const filteredFacilities = facilitiesData.filter(facility => {
+  const filteredFacilities = facilities.filter(facility => {
     const matchesSearch = 
       facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      facility.type.toLowerCase().includes(searchQuery.toLowerCase())
+      facility.location.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesStatus = 
       statusFilter === 'all' || 
-      (statusFilter === 'available' && facility.status === 'Available') ||
-      (statusFilter === 'booked' && facility.status === 'Booked') ||
-      (statusFilter === 'borrowed' && facility.status === 'Borrowed') ||
-      (statusFilter === 'inspection' && facility.status === 'Under Inspection') ||
-      (statusFilter === 'maintenance' && facility.status === 'Maintenance') ||
-      (statusFilter === 'damaged' && facility.status === 'Damaged')
+      facility.status.toLowerCase() === statusFilter
     
     return matchesSearch && matchesStatus
   })
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* SIDEBAR - KIRI (FIXED, TIDAK SCROLL) */}
+      {/* SIDEBAR - KIRI (FIXED, SAMA SEPERTI FACILITY) */}
       <aside className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-red-700 to-red-800 text-white transition-transform duration-300 transform`}>
         {/* Logo Header */}
         <div className="p-6 border-b border-red-600">
@@ -328,26 +296,25 @@ const facilities = () => {
                 )}
               </button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Facility Management</h1>
-                <p className="text-gray-600 text-sm">Kelola semua fasilitas</p>
+                <h1 className="text-xl font-bold text-gray-900">Dashboard Overview</h1>
+                <p className="text-gray-600 text-sm">Ringkasan dan monitoring fasilitas</p>
               </div>
             </div>
 
-            <button 
-              onClick={() => router.visit('/facilities/create')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Fasilitas Baru
-            </button>
+            <div className="flex items-center gap-4">
+              <button className="relative p-2 hover:bg-gray-100 rounded-lg">
+                <Bell className="w-5 h-5 text-gray-700" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+              </button>
+            </div>
           </div>
         </header>
 
         {/* MAIN CONTENT */}
         <main className="flex-1 p-6 bg-gray-50">
-          <Head title="Facility Management" />
+          <Head title="Dashboard" />
 
-          {/* FILTER & SEARCH */}
+          {/* FILTER & SEARCH (SAMA SEPERTI FACILITY) */}
           <div className="bg-white rounded-xl shadow border border-gray-200 p-6 mb-6">
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               {/* Search */}
@@ -362,7 +329,7 @@ const facilities = () => {
                 />
               </div>
 
-              {/* Filters - Only Status Filter Remains */}
+              {/* Filters */}
               <div className="flex flex-wrap gap-3">
                 <select
                   value={statusFilter}
@@ -372,8 +339,6 @@ const facilities = () => {
                   <option value="all">Semua Status</option>
                   <option value="available">Tersedia</option>
                   <option value="booked">Dipesan</option>
-                  <option value="borrowed">Dipinjam</option>
-                  <option value="inspection">Inspeksi</option>
                   <option value="maintenance">Perbaikan</option>
                   <option value="damaged">Rusak</option>
                 </select>
@@ -387,7 +352,7 @@ const facilities = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm">Total Fasilitas</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-1">{facilitiesData.length}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.totalFacilities}</h3>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-lg">
                   <Building className="w-6 h-6 text-blue-600" />
@@ -400,7 +365,7 @@ const facilities = () => {
                 <div>
                   <p className="text-gray-600 text-sm">Tersedia</p>
                   <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                    {facilitiesData.filter(f => f.status === 'Available').length}
+                    {stats.availableFacilities}
                   </h3>
                 </div>
                 <div className="p-3 bg-green-100 rounded-lg">
@@ -412,13 +377,13 @@ const facilities = () => {
             <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Perbaikan</p>
+                  <p className="text-gray-600 text-sm">Dipesan</p>
                   <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                    {facilitiesData.filter(f => f.status === 'Maintenance').length}
+                    {stats.bookedFacilities}
                   </h3>
                 </div>
-                <div className="p-3 bg-yellow-100 rounded-lg">
-                  <Wrench className="w-6 h-6 text-yellow-600" />
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Calendar className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
             </div>
@@ -426,20 +391,38 @@ const facilities = () => {
             <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Tidak Tersedia</p>
+                  <p className="text-gray-600 text-sm">Perawatan</p>
                   <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                    {facilitiesData.filter(f => f.status === 'Damaged').length}
+                    {stats.maintenanceFacilities}
                   </h3>
                 </div>
-                <div className="p-3 bg-red-100 rounded-lg">
-                  <XCircle className="w-6 h-6 text-red-600" />
+                <div className="p-3 bg-yellow-100 rounded-lg">
+                  <Wrench className="w-6 h-6 text-yellow-600" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* FACILITIES TABLE */}
+          {/* FACILITIES TABLE - TANPA TIPE DAN KAPASITAS */}
           <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+            {/* Table Header */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Fasilitas Terbaru</h2>
+                  <p className="text-gray-600 text-sm">Kelola dan pantau semua fasilitas</p>
+                </div>
+                <button 
+                  onClick={handleAddFacility}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Tambah Fasilitas
+                </button>
+              </div>
+            </div>
+
+            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -448,16 +431,13 @@ const facilities = () => {
                       Fasilitas
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tipe
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Performa
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Dibuat
+                      Lokasi
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Terakhir Diupdate
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
@@ -467,22 +447,16 @@ const facilities = () => {
                 <tbody className="divide-y divide-gray-200">
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center">
+                      <td colSpan={5} className="px-6 py-8 text-center">
                         <div className="flex justify-center">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
                         </div>
                         <p className="mt-2 text-gray-500">Memuat data fasilitas...</p>
                       </td>
                     </tr>
-                  ) : error ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-red-500">
-                        {error}
-                      </td>
-                    </tr>
                   ) : filteredFacilities.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                      <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                         Tidak ada fasilitas yang ditemukan
                       </td>
                     </tr>
@@ -495,7 +469,7 @@ const facilities = () => {
                           <td className="px-6 py-4">
                             <div className="flex items-center">
                               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                                <Package className="w-5 h-5 text-gray-600" />
+                                <Building className="w-5 h-5 text-gray-600" />
                               </div>
                               <div>
                                 <div className="font-medium text-gray-900">{facility.name}</div>
@@ -504,22 +478,32 @@ const facilities = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="font-medium text-gray-900">{facility.type}</div>
+                            <div className="flex items-center text-gray-700">
+                              <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                              {facility.location}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
-                            <PerformanceBar status={facility.status} />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-gray-700">{formatDate(facility.createdAt)}</div>
-                            <div className="text-xs text-gray-500">
-                              Diperbarui: {formatDate(facility.updatedAt)}
+                            <div>
+                              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bg} ${statusConfig.text}`}>
+                                {statusConfig.icon}
+                                {statusConfig.label}
+                              </span>
+                              {facility.bookedBy && facility.status === 'Booked' && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  <div className="font-medium">Oleh: {facility.bookedBy}</div>
+                                  {facility.bookedTime && (
+                                    <div className="flex items-center mt-1">
+                                      <Clock className="w-3 h-3 mr-1" />
+                                      {facility.bookedTime}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.bg} ${statusConfig.text}`}>
-                              {statusConfig.icon}
-                              {statusConfig.label}
-                            </span>
+                            <div className="text-gray-700">{formatDate(facility.lastUpdated)}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center space-x-3">
@@ -557,7 +541,7 @@ const facilities = () => {
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-gray-600 mb-4 sm:mb-0">
-                  Menampilkan <span className="font-medium">{filteredFacilities.length}</span> dari <span className="font-medium">{facilitiesData.length}</span> fasilitas
+                  Menampilkan <span className="font-medium">{filteredFacilities.length}</span> dari <span className="font-medium">{facilities.length}</span> fasilitas
                 </div>
                 <div className="flex items-center space-x-2">
                   <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
@@ -582,4 +566,4 @@ const facilities = () => {
   )
 }
 
-export default facilities
+export default Dashboard
