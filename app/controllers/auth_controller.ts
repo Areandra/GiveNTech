@@ -122,3 +122,4 @@ export default class AuthController {
     return ctx.response.redirect('/facilities')
   }
 }
+

@@ -31,3 +31,4 @@ export default class ViewsController {
     return inertia.render('qrcodeReader')
   }
 }
+
