@@ -10,17 +10,13 @@ import {
   AlertCircle,
   MapPin,
   Package,
+  Pencil,
 } from 'lucide-react'
-
 import axios from 'axios'
 
 interface Room {
   id: number
   roomName: string
-  longitude: string
-  latitude: string
-  createdAt: string
-  updatedAt: string
 }
 
 interface Facility {
@@ -28,22 +24,30 @@ interface Facility {
   name: string
   type: string
   status: string
-  createdAt: string
-  updatedAt: string
 }
 
-interface BookingFormProps {
+interface Booking {
+  id: number
+  idFacility: number
+  idRoom: number
+  bookingDate: string
+  purpose: string
+  notes: string
+}
+
+interface EditBookingFormProps {
+  booking: Booking
   facility: Facility
   rooms: Room[]
 }
 
-const BookingForm = ({ facility, rooms }: BookingFormProps) => {
+const EditBookingForm = ({ booking, facility, rooms }: EditBookingFormProps) => {
   const { data, setData, processing, errors } = useForm({
-    idFacility: facility?.id,
-    idRoom: '',
-    bookingDate: '',
-    purpose: '',
-    notes: '',
+    idFacility: booking.idFacility,
+    idRoom: booking.idRoom.toString(),
+    bookingDate: booking.bookingDate.toString().substring(0, 16),
+    purpose: booking.purpose,
+    notes: booking.notes,
   })
 
   const [step, setStep] = useState(1)
@@ -74,29 +78,22 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
     '18:00',
   ]
 
-  const displayDate = data.bookingDate ? data.bookingDate.split('T')[0] : ''
-  const displayTime = data.bookingDate ? data.bookingDate.split('T')[1].substring(0, 5) : ''
+  const displayDate = data.bookingDate ? data.bookingDate.substring(0, 10) : ''
+  const displayTime = data.bookingDate ? data.bookingDate.substring(11, 16) : ''
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value
 
-    if (data.bookingDate && data.bookingDate.includes('T')) {
-      const currentTime = data.bookingDate.split('T')[1]
-      setData('bookingDate', `${newDate}T${currentTime}`)
-    } else {
-      setData('bookingDate', `${newDate}T`)
-    }
+    setData('bookingDate', `${newDate}T${displayTime || '00:00'}:00`)
   }
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newTime = e.target.value
 
-    if (data.bookingDate && data.bookingDate.includes('T')) {
-      const currentDate = data.bookingDate.split('T')[0]
-      setData('bookingDate', `${currentDate}T${newTime}:00`)
+    if (displayDate) {
+      setData('bookingDate', `${displayDate}T${newTime}:00`)
     } else {
       alert('Pilih tanggal terlebih dahulu.')
-      setData('bookingDate', '')
     }
   }
 
@@ -116,39 +113,42 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
       }
       setStep(3)
     } else if (step === 3) {
-      console.log(data)
-      axios
-        .post('/api/v1/me/booking', data, { withCredentials: true })
-        .then(() => router.visit('/dashboard'))
-      // post('/api/v1/me/booking', {
-      //   onSuccess: () => console.error('Submission Error:'),
-      //   onError: (e) => console.error('Submission Error:', e),
+      console.log('Data yang Diperbarui:', data)
+
+      // put(`/api/v1/me/booking/${booking.id}`, {
+      //   onSuccess: () => router.visit('/dashboard'),
+      //   onError: (e) => console.error('Update Error:', e),
       // })
+
+      axios
+        .patch(`/api/v1/me/booking/${booking.id}`, data, { withCredentials: true })
+        .then(() => router.visit('/dashboard'))
+        .catch((e) => console.error('Update Error:', e))
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Head title="Peminjaman Fasilitas" />
+      <Head title={`Edit Peminjaman ${booking.id}`} />
 
       <div className="bg-white shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => router.visit(`/facilities/`)}
+                onClick={() => router.visit('/dashboard')}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-700" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Peminjaman Barang</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Edit Peminjaman Barang</h1>
                 <p className="text-gray-600">
-                  Isi form untuk meminjam **{itemDetail.name}** ({itemDetail.type})
+                  Mengedit peminjaman **{itemDetail.name}** ID: **{booking.id}**
                 </p>
               </div>
             </div>
-            <Package className="h-8 w-8 text-red-600" />
+            <Pencil className="h-8 w-8 text-blue-600" />
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               <div
                 className={`flex items-center justify-center h-10 w-10 rounded-full ${
                   stepNumber === step
-                    ? 'bg-red-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : stepNumber < step
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-200 text-gray-600'
@@ -175,7 +175,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               <div
                 className={`ml-2 font-medium ${
                   stepNumber === step
-                    ? 'text-red-600'
+                    ? 'text-blue-600'
                     : stepNumber < step
                       ? 'text-green-600'
                       : 'text-gray-500'
@@ -183,7 +183,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               >
                 {stepNumber === 1 && 'Lokasi & Waktu'}
                 {stepNumber === 2 && 'Detail Peminjaman'}
-                {stepNumber === 3 && 'Konfirmasi'}
+                {stepNumber === 3 && 'Konfirmasi Edit'}
               </div>
               {stepNumber < 3 && (
                 <div
@@ -198,7 +198,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
           {step === 1 && (
             <div className="bg-white rounded-xl shadow p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
-                Tentukan Lokasi & Waktu Peminjaman
+                Edit Lokasi & Waktu Peminjaman
               </h2>
 
               <div className="space-y-6">
@@ -211,7 +211,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     name="idRoom"
                     value={data.idRoom}
                     onChange={(e) => setData('idRoom', e.target.value)}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
                     <option value="">Pilih ruangan</option>
@@ -235,7 +235,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     value={displayDate}
                     onChange={handleDateChange}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -249,7 +249,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     name="startTime"
                     value={displayTime}
                     onChange={handleTimeChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
                     <option value="">Pilih waktu peminjaman</option>
@@ -290,7 +290,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
 
           {step === 2 && (
             <div className="bg-white rounded-xl shadow p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Detail Peminjaman</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Edit Detail Peminjaman</h2>
 
               <div className="space-y-6">
                 <div>
@@ -304,7 +304,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     value={data.purpose}
                     onChange={(e) => setData('purpose', e.target.value)}
                     placeholder="Jelaskan tujuan penggunaan barang ini"
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                   {errors.purpose && <p className="mt-1 text-sm text-red-600">{errors.purpose}</p>}
@@ -320,7 +320,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     onChange={(e) => setData('notes', e.target.value)}
                     rows={4}
                     placeholder="Tulis catatan khusus atau permintaan tambahan..."
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -330,8 +330,8 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     Ketentuan Peminjaman
                   </h3>
                   <ul className="text-blue-800 space-y-2 text-sm">
-                    <li>• Permintaan akan diverifikasi oleh admin dalam 1x24 jam</li>
-                    <li>• Batalkan peminjaman minimal 2 jam sebelum waktu mulai</li>
+                    <li>• Permintaan akan diverifikasi ulang oleh admin dalam 1x24 jam</li>
+                    <li>• Perubahan harus mematuhi jadwal yang ada</li>
                     <li>• Jaga dan rawat barang dengan baik</li>
                   </ul>
                 </div>
@@ -341,11 +341,13 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
 
           {step === 3 && (
             <div className="bg-white rounded-xl shadow p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Konfirmasi Peminjaman</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Konfirmasi Perubahan Peminjaman
+              </h2>
 
               <div className="space-y-8">
                 <div className="bg-gray-50 rounded-xl p-6">
-                  <h3 className="font-bold text-gray-900 mb-4">Ringkasan Peminjaman</h3>
+                  <h3 className="font-bold text-gray-900 mb-4">Ringkasan Perubahan</h3>
 
                   <div className="space-y-4">
                     <div className="flex justify-between">
@@ -371,7 +373,9 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                     <div className="pt-4 border-t">
                       <div className="text-sm text-gray-600">
                         Status:{' '}
-                        <span className="font-medium text-yellow-600">Menunggu Verifikasi</span>
+                        <span className="font-medium text-yellow-600">
+                          Menunggu Verifikasi Ulang
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -383,21 +387,21 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                       type="checkbox"
                       id="terms"
                       required
-                      className="h-5 w-5 text-red-600 rounded mt-1"
+                      className="h-5 w-5 text-blue-600 rounded mt-1"
                     />
                     <label htmlFor="terms" className="ml-3 text-sm text-gray-700">
-                      Saya menyetujui ketentuan penggunaan fasilitas.
+                      Saya menyetujui perubahan dan ketentuan penggunaan fasilitas.
                     </label>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
                   <div className="flex items-center">
-                    <CheckCircle className="h-8 w-8 text-green-600 mr-3" />
+                    <Pencil className="h-8 w-8 text-blue-600 mr-3" />
                     <div>
-                      <h4 className="font-bold text-green-900">Permintaan Siap Dikirim!</h4>
-                      <p className="text-green-800 text-sm">
-                        Setelah dikirim, permintaan Anda akan menunggu verifikasi admin
+                      <h4 className="font-bold text-blue-900">Perubahan Siap Dikirim!</h4>
+                      <p className="text-blue-800 text-sm">
+                        Permintaan perubahan Anda akan diproses.
                       </p>
                     </div>
                   </div>
@@ -421,11 +425,15 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
             <button
               type="submit"
               className={`ml-auto px-8 py-3 rounded-lg font-medium text-white transition-colors ${
-                step === 3 ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+                step === 3 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700'
               } ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={processing}
             >
-              {step === 3 ? (processing ? 'Mengirim...' : 'Konfirmasi Peminjaman') : 'Lanjutkan →'}
+              {step === 3
+                ? processing
+                  ? 'Menyimpan Perubahan...'
+                  : 'Simpan Perubahan'
+                : 'Lanjutkan →'}
             </button>
           </div>
         </form>
@@ -434,4 +442,4 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
   )
 }
 
-export default BookingForm
+export default EditBookingForm

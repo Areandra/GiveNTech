@@ -60,6 +60,16 @@ export default class Booking extends BaseModel {
     | 'Penalized'
     | 'Done'
 
+  @column()
+  @Field()
+  @ApiProperty()
+  declare purpose: string
+
+  @column()
+  @Field()
+  @ApiProperty({ required: false })
+  declare notes?: string
+
   @column.dateTime({ autoCreate: true })
   @Field()
   @ApiProperty()

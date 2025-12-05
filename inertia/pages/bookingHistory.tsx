@@ -1,19 +1,18 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Head, router } from '@inertiajs/react'
-import { 
-  Calendar, 
-  Building, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Search, 
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Search,
   Filter,
   Download,
   Eye,
   Trash2,
   RefreshCw,
   AlertCircle,
-  History as HistoryIcon
+  History as HistoryIcon,
 } from 'lucide-react'
 
 const BookingHistory = () => {
@@ -32,7 +31,7 @@ const BookingHistory = () => {
       bookingDate: '2024-01-20 10:30',
       location: 'Gedung Utama Lt. 3',
       participants: 10,
-      purpose: 'Meeting Tim Marketing'
+      purpose: 'Meeting Tim Marketing',
     },
     {
       id: 2,
@@ -44,7 +43,7 @@ const BookingHistory = () => {
       bookingDate: '2024-01-21 14:20',
       location: 'Gedung Teknik Lt. 2',
       participants: 25,
-      purpose: 'Praktikum Mahasiswa'
+      purpose: 'Praktikum Mahasiswa',
     },
     {
       id: 3,
@@ -56,7 +55,7 @@ const BookingHistory = () => {
       bookingDate: '2024-01-19 09:15',
       location: 'Area Olahraga',
       participants: 15,
-      purpose: 'Latihan Tim Basket'
+      purpose: 'Latihan Tim Basket',
     },
     {
       id: 4,
@@ -68,7 +67,7 @@ const BookingHistory = () => {
       bookingDate: '2024-01-18 16:45',
       location: 'Gedung Utama Lt. 1',
       participants: 150,
-      purpose: 'Seminar Nasional'
+      purpose: 'Seminar Nasional',
     },
     {
       id: 5,
@@ -80,7 +79,7 @@ const BookingHistory = () => {
       bookingDate: '2024-01-17 11:30',
       location: 'Gedung Seni Lt. 1',
       participants: 8,
-      purpose: 'Rekaman Band'
+      purpose: 'Rekaman Band',
     },
     {
       id: 6,
@@ -92,8 +91,8 @@ const BookingHistory = () => {
       bookingDate: '2024-01-16 13:20',
       location: 'Gedung Pusat Lt. 2',
       participants: 5,
-      purpose: 'Studi Kelompok'
-    }
+      purpose: 'Studi Kelompok',
+    },
   ]
 
   const handleViewBooking = (id: number) => {
@@ -111,56 +110,54 @@ const BookingHistory = () => {
     if (selectedBookings.length === bookings.length) {
       setSelectedBookings([])
     } else {
-      setSelectedBookings(bookings.map(b => b.id))
+      setSelectedBookings(bookings.map((b) => b.id))
     }
   }
 
   const handleSelectBooking = (id: number) => {
-    setSelectedBookings(prev => 
-      prev.includes(id) 
-        ? prev.filter(bookingId => bookingId !== id)
-        : [...prev, id]
+    setSelectedBookings((prev) =>
+      prev.includes(id) ? prev.filter((bookingId) => bookingId !== id) : [...prev, id]
     )
   }
 
   const getStatusConfig = (status: string) => {
     const config: any = {
-      approved: { 
-        color: 'bg-green-100 text-green-800', 
-        icon: <CheckCircle className="h-3 w-3" />, 
+      approved: {
+        color: 'bg-green-100 text-green-800',
+        icon: <CheckCircle className="h-3 w-3" />,
         label: 'Disetujui',
-        badgeColor: 'border-green-200 bg-green-50'
+        badgeColor: 'border-green-200 bg-green-50',
       },
-      pending: { 
-        color: 'bg-yellow-100 text-yellow-800', 
-        icon: <Clock className="h-3 w-3" />, 
+      pending: {
+        color: 'bg-yellow-100 text-yellow-800',
+        icon: <Clock className="h-3 w-3" />,
         label: 'Menunggu',
-        badgeColor: 'border-yellow-200 bg-yellow-50'
+        badgeColor: 'border-yellow-200 bg-yellow-50',
       },
-      completed: { 
-        color: 'bg-blue-100 text-blue-800', 
-        icon: <CheckCircle className="h-3 w-3" />, 
+      completed: {
+        color: 'bg-blue-100 text-blue-800',
+        icon: <CheckCircle className="h-3 w-3" />,
         label: 'Selesai',
-        badgeColor: 'border-blue-200 bg-blue-50'
+        badgeColor: 'border-blue-200 bg-blue-50',
       },
-      rejected: { 
-        color: 'bg-red-100 text-red-800', 
-        icon: <XCircle className="h-3 w-3" />, 
+      rejected: {
+        color: 'bg-red-100 text-red-800',
+        icon: <XCircle className="h-3 w-3" />,
         label: 'Ditolak',
-        badgeColor: 'border-red-200 bg-red-50'
+        badgeColor: 'border-red-200 bg-red-50',
       },
-      cancelled: { 
-        color: 'bg-gray-100 text-gray-800', 
-        icon: <XCircle className="h-3 w-3" />, 
+      cancelled: {
+        color: 'bg-gray-100 text-gray-800',
+        icon: <XCircle className="h-3 w-3" />,
         label: 'Dibatalkan',
-        badgeColor: 'border-gray-200 bg-gray-50'
-      }
+        badgeColor: 'border-gray-200 bg-gray-50',
+      },
     }
     return config[status] || config.pending
   }
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = 
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch =
       booking.facilityName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.purpose.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter
@@ -169,9 +166,9 @@ const BookingHistory = () => {
 
   const stats = {
     total: bookings.length,
-    approved: bookings.filter(b => b.status === 'approved').length,
-    pending: bookings.filter(b => b.status === 'pending').length,
-    completed: bookings.filter(b => b.status === 'completed').length
+    approved: bookings.filter((b) => b.status === 'approved').length,
+    pending: bookings.filter((b) => b.status === 'pending').length,
+    completed: bookings.filter((b) => b.status === 'completed').length,
   }
 
   return (
@@ -191,7 +188,7 @@ const BookingHistory = () => {
                 <p className="text-gray-600">Kelola dan pantau semua booking Anda</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => router.visit('/facilities')}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
             >
@@ -333,11 +330,21 @@ const BookingHistory = () => {
                       className="h-4 w-4 text-red-600 rounded"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fasilitas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal & Waktu</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibooking Pada</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Fasilitas
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Tanggal & Waktu
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Dibooking Pada
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -363,21 +370,27 @@ const BookingHistory = () => {
                       <td className="px-6 py-4">
                         <div className="text-gray-900">{booking.date}</div>
                         <div className="text-sm text-gray-500">{booking.time}</div>
-                        <div className="text-xs text-gray-400 mt-1">{booking.participants} peserta</div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {booking.participants} peserta
+                        </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
+                        >
                           {statusConfig.icon}
                           <span className="ml-1">{statusConfig.label}</span>
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-gray-900">{booking.bookingDate.split(' ')[0]}</div>
-                        <div className="text-sm text-gray-500">{booking.bookingDate.split(' ')[1]}</div>
+                        <div className="text-sm text-gray-500">
+                          {booking.bookingDate.split(' ')[1]}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <button 
+                          <button
                             onClick={() => handleViewBooking(booking.id)}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                             title="Lihat Detail"
@@ -385,7 +398,7 @@ const BookingHistory = () => {
                             <Eye className="h-4 w-4" />
                           </button>
                           {(booking.status === 'pending' || booking.status === 'approved') && (
-                            <button 
+                            <button
                               onClick={() => handleCancelBooking(booking.id)}
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                               title="Batalkan"
@@ -420,11 +433,14 @@ const BookingHistory = () => {
           <div className="px-6 py-4 border-t bg-gray-50">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-gray-600 mb-4 sm:mb-0">
-                Menampilkan <span className="font-medium">{filteredBookings.length}</span> dari <span className="font-medium">{bookings.length}</span> booking
+                Menampilkan <span className="font-medium">{filteredBookings.length}</span> dari{' '}
+                <span className="font-medium">{bookings.length}</span> booking
               </div>
               <div className="flex items-center space-x-2">
                 <button className="px-3 py-1 border rounded text-sm hover:bg-gray-50">←</button>
-                <button className="px-3 py-1 border rounded text-sm bg-gray-100 font-medium">1</button>
+                <button className="px-3 py-1 border rounded text-sm bg-gray-100 font-medium">
+                  1
+                </button>
                 <button className="px-3 py-1 border rounded text-sm hover:bg-gray-50">2</button>
                 <button className="px-3 py-1 border rounded text-sm hover:bg-gray-50">→</button>
               </div>
@@ -446,9 +462,15 @@ const BookingHistory = () => {
           <div className="bg-green-50 border border-green-200 rounded-xl p-6">
             <h4 className="font-bold text-green-900 mb-2">Status Booking</h4>
             <ul className="text-green-800 text-sm space-y-2">
-              <li>• <span className="font-medium">Menunggu:</span> Sedang diverifikasi admin</li>
-              <li>• <span className="font-medium">Disetujui:</span> Booking sudah dikonfirmasi</li>
-              <li>• <span className="font-medium">Selesai:</span> Fasilitas sudah digunakan</li>
+              <li>
+                • <span className="font-medium">Menunggu:</span> Sedang diverifikasi admin
+              </li>
+              <li>
+                • <span className="font-medium">Disetujui:</span> Booking sudah dikonfirmasi
+              </li>
+              <li>
+                • <span className="font-medium">Selesai:</span> Fasilitas sudah digunakan
+              </li>
             </ul>
           </div>
 

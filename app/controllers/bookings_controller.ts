@@ -68,6 +68,7 @@ export default class BookingsController {
   })
   async store(ctx: HttpContext) {
     const body = await ctx.request.validateUsing(BookingCreate)
+    console.log('contol', body)
     await BookingService.createBooking(body)
 
     ctx.response.ok({
@@ -93,7 +94,9 @@ export default class BookingsController {
   })
   async update(ctx: HttpContext) {
     const id = ctx.params.id
-    const body = await ctx.request.validateUsing(BookingUpdate)
+    const body = await ctx.request.validateUsing(BookingUpdate, {
+      meta: { userRole: ctx.auth.user?.role || "user" },
+    })
     await BookingService.updateBooking(id, {
       ...body,
     })

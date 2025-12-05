@@ -47,6 +47,8 @@ export default class extends BaseSchema {
           'Done',
         ])
         .defaultTo('Pending')
+      table.text('purpose').notNullable()
+      table.string('notes').nullable()
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

@@ -22,13 +22,40 @@ router.group(() => {
   router.get('/login/oauth/google/callback', '#controllers/auth_controller.oauth2SessionCallback')
   router.get('/login', '#controllers/views_controller.login')
   router.get('/register', '#controllers/views_controller.register')
+  router.post('/login', '#controllers/auth_controller.sessionLogin')
+  router.post('/register', '#controllers/auth_controller.sessionRegister')
   router
     .group(() => {
+      router.get('/dashboard', '#controllers/views_controller.dashboard')
+      router.get('/booking', '#controllers/views_controller.booking')
+      router.get('/booking/create/:facilityId', '#controllers/views_controller.bookingForm')
+      router.get('/booking/:bookingId/edit', '#controllers/views_controller.bookingEdit')
       router.get('/facilities', '#controllers/views_controller.facility')
+      router.get('/facilities/create', '#controllers/views_controller.facilityForm')
+      router.get('/facilities/:facilityId/edit', '#controllers/views_controller.facilityEdit')
       router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
-      router.get('/qrReader', '#controllers/views_controller.qrReader')
+      router.get('/qrScanner', '#controllers/views_controller.qrReader')
+      router.get('/map', '#controllers/views_controller.map')
     })
     .use(middleware.auth({ guards: ['web'] }))
+    .use(middleware.roleBasedAcsess(['admin']))
+
+  router
+    .group(() => {
+      router.get('/user/dashboard', ({ inertia }) => {
+        return inertia.render('userDashboard')
+      })
+
+      router.get('/user/facility', ({ inertia }) => {
+        return inertia.render('userFacility')
+      })
+
+      router.get('/user/booking/history', ({ inertia }) => {
+        return inertia.render('bookingHistory')
+      })
+    })
+    .use(middleware.auth({ guards: ['web'] }))
+    .use(middleware.roleBasedAcsess(['user']))
 })
 
 router
@@ -99,27 +126,4 @@ router.get('/docs.yml', '#controllers/open_apis_controller.yaml')
 router.get('/redirect/*', async ({ params, response }) => {
   const path = params['*']
   return response.redirect(`/${path}`)
-})
-
-
-router.get('/dashboard', '#controllers/dashboard_controller.index')
-
-router.get('/booking', ({ inertia }) => {
-  return inertia.render('booking')
-})
-
-router.get('/user-Dashboard', ({ inertia }) => {
-  return inertia.render('userDashboard')
-})
-
-router.get('/user-Facility', ({ inertia }) => {
-  return inertia.render('userFacility')
-})
-
-router.get('/booking-Form', ({ inertia }) => {
-  return inertia.render('bookingForm')
-})
-
-router.get('/booking-History', ({ inertia }) => {
-  return inertia.render('bookingHistory')
 })

@@ -1,113 +1,112 @@
-// resources/js/Layouts/AuthenticatedLayout.tsx
-import React, { PropsWithChildren } from 'react'
-import { Link, usePage } from '@inertiajs/react'
-import { Map, CalendarCheck, Package, User, QrCode } from 'lucide-react'
+import { useState, ReactNode } from 'react'
+import { router } from '@inertiajs/react'
+import {
+  Home,
+  Calendar,
+  Building,
+  MapPin,
+  QrCode,
+  Menu,
+  X,
+  User,
+  ChevronRight,
+  ShieldCheck,
+} from 'lucide-react'
+import { MenuItem } from '../types/index'
 
-// Definisikan tipe untuk item sidebar
-interface SidebarItem {
-  name: string
-  icon: React.ElementType
-  href: string // Nilai ini harus diisi secara eksplisit
-  active: boolean
+interface AdminLayoutProps {
+  children: ReactNode
+  activeMenu: string
+  user: any
 }
 
-export default function AuthenticatedLayout({ children }: PropsWithChildren) {
-  const currentUrl = usePage().url
+const menuItems: MenuItem[] = [
+  { icon: Home, label: 'Dashboard', href: '/dashboard' },
+  { icon: Calendar, label: 'Booking', href: '/booking' },
+  { icon: Building, label: 'Facility', href: '/facilities' },
+  { icon: MapPin, label: 'Map View', href: '/map' },
+  { icon: QrCode, label: 'QR Scanner', href: '/qrScanner' },
+]
 
-  const mainMenuItems: SidebarItem[] = [
-    {
-      name: 'Dashboard',
-      icon: CalendarCheck,
-      // PERBAIKAN: Isi href secara eksplisit
-      href: '/dashboard',
-      // Gunakan pola yang lebih spesifik untuk cek aktif
-      active: currentUrl.includes('/dashboard'),
-    },
-    {
-      name: 'Booking Management',
-      icon: CalendarCheck,
-      // PERBAIKAN: Isi href secara eksplisit
-      href: '/bookings',
-      // Gunakan pola yang lebih spesifik untuk cek aktif
-      active: currentUrl.includes('/bookings'),
-    },
-    {
-      name: 'Facility Management',
-      icon: Package,
-      // PERBAIKAN: Isi href secara eksplisit (Asumsi rute Anda adalah /facilities)
-      href: '/facilities',
-      // Gunakan pola yang lebih spesifik untuk cek aktif
-      active: currentUrl.includes('/facilities') || currentUrl.includes('/facility/'),
-    },
-    {
-      name: 'Map View',
-      icon: Map,
-      href: '/map',
-      active: currentUrl.includes('/map'),
-    },
-    {
-      name: 'QR Scaner',
-      icon: QrCode,
-      // PERBAIKAN: Isi href secara eksplisit
-      href: '/qrReader',
-      active: currentUrl.includes('/qrReader'),
-    },
-  ]
+const AdminLayout = ({ children, activeMenu, user }: AdminLayoutProps) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  const handleMenuClick = (href: string) => {
+    router.visit(href)
+
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-        {/* Logo/Header Sidebar */}
-        <div className="p-4 flex items-center h-16 border-b border-gray-200">
-          <div className="w-6 h-6 bg-red-600 rounded-lg mr-2"></div>
-          <span className="font-bold text-lg text-gray-800">FACILITY APP</span>
+      <aside
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-red-700 to-red-800 text-white transition-transform duration-300 transform`}
+      >
+        <div className="p-6 border-b border-red-600">
+          <h1 className="text-2xl font-bold">GivenTech</h1>
+          <p className="text-red-200 text-sm mt-1">Facility Management</p>
         </div>
 
-        {/* Menu Navigasi Utama */}
         <nav className="p-4 space-y-2">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            MAIN NAVIGATION
-          </h3>
-
-          {mainMenuItems.map((item) => (
-            <Link
-              key={item.name}
-              // PASTIKAN item.href SUDAH TERISI
-              href={item.href}
-              className={`flex items-center p-3 rounded-lg text-base transition duration-150 ${
-                item.active
-                  ? 'bg-red-50 text-red-600 font-semibold shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-100'
+          {menuItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => handleMenuClick(item.href)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                item.href === activeMenu
+                  ? 'bg-red-600 shadow-lg text-white'
+                  : 'text-red-100 hover:bg-red-600/50 hover:text-white'
               }`}
             >
-              <item.icon className="w-5 h-5 mr-3" />
-              {item.name}
-            </Link>
+              <item.icon className="w-5 h-5" />
+              <span className="font-medium text-left">{item.label}</span>
+              {item.href === activeMenu && <ChevronRight className="w-4 h-4 ml-auto" />}
+            </button>
           ))}
         </nav>
 
-        {/* Footer Sidebar (Opsional) */}
-        {/* <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
-          <div className="flex items-center text-sm text-gray-500">
-            <Settings className="w-4 h-4 mr-2" />
-            Settings
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-red-600">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-red-600/30 hover:bg-red-600/50 transition-colors cursor-pointer">
+            <div className="w-10 h-10 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold">{user.username}</p>
+              <p className="text-red-200 text-xs">{user.role}</p>
+            </div>
+            <ShieldCheck className="w-4 h-4 ml-auto text-green-300" />
           </div>
-        </div> */}
+        </div>
       </aside>
 
-      <main className="flex-1 relative">
-        {/* Header Konten */}
-        <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 px-6 z-40 flex items-center justify-end">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Hi, Admin</span>
-            <User className="w-6 h-6 text-gray-600 border p-1 rounded-full" />
+      <div className="flex-1 flex flex-col lg:ml-64">
+        <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+              >
+                {sidebarOpen ? (
+                  <X className="w-5 h-5 text-gray-700" />
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-700" />
+                )}
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900"></h1>
+                <p className="text-gray-600 text-sm"></p>
+              </div>
+            </div>
           </div>
         </header>
 
-        {/* Konten Halaman */}
-        <div className="pt-16 h-full overflow-y-auto">{children}</div>
-      </main>
+        <main className="flex-1 p-6 bg-gray-50">{children}</main>
+      </div>
     </div>
   )
 }
+
+export default AdminLayout

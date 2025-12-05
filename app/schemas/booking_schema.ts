@@ -46,17 +46,26 @@ export const baseBookingSchema = {
     .enum(['Pending', 'Confirmed', 'Picked Up', 'Returned', 'Cancelled', 'Penalized', 'Done'])
     .use(isAdminExceptRule(['Pending', 'Cancelled']))
     .optional(),
+
+  purpose: vine.string(),
+  notes: vine.string().optional(),
 }
 
 export const createBookingSchema = vine.object({
   idUser: baseBookingSchema.idUser.optional(),
   idRoom: baseBookingSchema.idRoom.optional(),
   idFacility: baseBookingSchema.idFacility,
+  bookingDate: baseBookingSchema.bookingDate,
+  purpose: baseBookingSchema.purpose,
+  notes: baseBookingSchema.notes,
 })
 
 export const createMeBookingSchema = vine.object({
   idFacility: baseBookingSchema.idFacility,
   idRoom: baseBookingSchema.idRoom,
+  bookingDate: baseBookingSchema.bookingDate,
+  purpose: baseBookingSchema.purpose,
+  notes: baseBookingSchema.notes,
 })
 
 export const updateBookingSchema = vine.object({
@@ -66,5 +75,7 @@ export const updateBookingSchema = vine.object({
   returnDate: baseBookingSchema.returnDate,
   status: baseBookingSchema.status,
 
-  idRoom: baseBookingSchema.idRoom,
+  idRoom: baseBookingSchema.idRoom.optional(),
+  purpose: baseBookingSchema.purpose.optional(),
+  notes: baseBookingSchema.notes,
 })

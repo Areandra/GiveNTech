@@ -8,7 +8,7 @@ export function checkIsAdmin(role: any) {
        Check your Controller!
        Example:
        await request.validateUsing(validator, {
-         meta: { user_role: user.role }
+         meta: { userRole: user.role }
        })`
     )
   }

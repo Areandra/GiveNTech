@@ -54,9 +54,11 @@ export default class AuthController {
     const user = await User.verifyCredentials(email, password)
     await ctx.auth.use('web').login(user)
 
-    return this.ok(ctx, 'Session login successful', {
-      redirect: '/dashboard',
-    })
+    return ctx.response.redirect('/dashboard')
+
+    // return this.ok(ctx, 'Session login successful', {
+    //   redirect: '/dashboard',
+    // })
   }
 
   @ApiOperation({ summary: 'Register User (Session Cookies)' })
