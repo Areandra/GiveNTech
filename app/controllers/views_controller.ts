@@ -35,3 +35,4 @@ export default class ViewsController {
     return inertia.render('map')
   }
 }
+

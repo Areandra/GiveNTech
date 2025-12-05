@@ -97,3 +97,26 @@ router.get('/redirect/*', async ({ params, response }) => {
   const path = params['*']
   return response.redirect(`/${path}`)
 })
+
+
+router.get('/dashboard', '#controllers/dashboard_controller.index')
+
+router.get('/booking', ({ inertia }) => {
+  return inertia.render('booking')
+})
+
+router.get('/user-Dashboard', ({ inertia }) => {
+  return inertia.render('userDashboard')  
+})
+
+router.get('/user-Facility', ({ inertia }) => {
+  return inertia.render('userFacility')  
+})
+
+router.get('/booking-Form', ({ inertia }) => {
+  return inertia.render('bookingForm')  
+})
+
+router.get('/booking-History', ({ inertia }) => {
+  return inertia.render('bookingHistory')  
+})
