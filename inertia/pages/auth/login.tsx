@@ -1,4 +1,3 @@
-// resources/js/Pages/Auth/Login.tsx
 import { useEffect, FormEventHandler } from 'react'
 import GuestLayout from '#layout/GuestLayout'
 import { Head, useForm, Link } from '@inertiajs/react'
@@ -25,15 +24,12 @@ export default function Login() {
     <GuestLayout>
       <Head title="Login" />
 
-      {/* Header */}
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-gray-900">Welcome Back to Giventech!</h2>
         <p className="text-gray-600 mt-2">Sign in to your account</p>
       </div>
 
-      {/* Form */}
       <form onSubmit={submit} className="space-y-6">
-        {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Your Email
@@ -50,7 +46,6 @@ export default function Login() {
           {errors.email && <div className="text-red-500 text-xs mt-1">{errors.email}</div>}
         </div>
 
-        {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
@@ -67,7 +62,6 @@ export default function Login() {
           {errors.password && <div className="text-red-500 text-xs mt-1">{errors.password}</div>}
         </div>
 
-        {/* Remember + Forgot */}
         <div className="flex justify-between items-center text-sm">
           <label className="flex items-center space-x-2">
             <input
@@ -88,7 +82,6 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* Login Button */}
         <button
           type="submit"
           disabled={processing}
@@ -98,7 +91,6 @@ export default function Login() {
         </button>
       </form>
 
-      {/* Other Login Options */}
       <div className="mt-10 text-center">
         <p className="text-xs text-gray-400 mb-4">Instant Login</p>
 
@@ -107,15 +99,16 @@ export default function Login() {
             onClick={() => (window.location.href = '/login/oauth/google')}
             className="flex-1 flex items-center justify-center border border-gray-300 py-2 rounded-md text-sm hover:bg-gray-50 transition"
           >
-            <svg role="img" viewBox="0 0 24 24" className="w-5 h-5 mr-2 fill-current">
-              {/* icon */}
-            </svg>
+            <img
+              src="https://imgs.search.brave.com/7UE8s6Vmejf0vIOulxuYgTsHZyIiGUJA4bIncsDWPug/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/aWNvbnMtcG5nLmZy/ZWVwaWsuY29tLzI1/Ni8yOTkxLzI5OTEx/NDgucG5nP3NlbXQ9/YWlzX3doaXRlX2xh/YmVs"
+              alt=""
+              className='w-6 mr-4'
+            />
             Continue with Google
           </button>
         </div>
       </div>
 
-      {/* Register Link */}
       <div className="mt-6 text-center text-sm">
         <p>
           Don't have an account?{' '}

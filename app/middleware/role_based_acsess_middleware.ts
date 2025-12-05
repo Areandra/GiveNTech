@@ -6,7 +6,6 @@ export default class RoleBasedAcsessMiddleware {
     const user = ctx.auth.user
 
     if (!user) return ctx.response.unauthorized({ message: 'Unauthorized' })
-    console.log(ctx)
 
     if (allowedRoles && !allowedRoles.includes(user.role))
       return ctx.response.forbidden({ messege: 'Forbidden' })

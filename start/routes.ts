@@ -24,11 +24,14 @@ router.group(() => {
   router.get('/register', '#controllers/views_controller.register')
   router.post('/login', '#controllers/auth_controller.sessionLogin')
   router.post('/register', '#controllers/auth_controller.sessionRegister')
+  router.post('/logout', async ({ auth, response }) => {
+    await auth.use('web').logout()
+    return response.redirect('/login')
+  })
   router
     .group(() => {
       router.get('/dashboard', '#controllers/views_controller.dashboard')
       router.get('/booking', '#controllers/views_controller.booking')
-      router.get('/booking/create/:facilityId', '#controllers/views_controller.bookingForm')
       router.get('/booking/:bookingId/edit', '#controllers/views_controller.bookingEdit')
       router.get('/facilities', '#controllers/views_controller.facility')
       router.get('/facilities/create', '#controllers/views_controller.facilityForm')
@@ -42,17 +45,11 @@ router.group(() => {
 
   router
     .group(() => {
-      router.get('/user/dashboard', ({ inertia }) => {
-        return inertia.render('userDashboard')
-      })
-
-      router.get('/user/facility', ({ inertia }) => {
-        return inertia.render('userFacility')
-      })
-
-      router.get('/user/booking/history', ({ inertia }) => {
-        return inertia.render('bookingHistory')
-      })
+      router.get('/user/dashboard', '#controllers/views_controller.userDashboard')
+      router.get('/user/facilities', '#controllers/views_controller.userFacilities')
+      router.get('/user/booking/history', '#controllers/views_controller.userHistory')
+      router.get('/booking/create/:facilityId', '#controllers/views_controller.bookingForm')
+      router.get('/booking/:id', '#controllers/views_controller.detailBooking')
     })
     .use(middleware.auth({ guards: ['web'] }))
     .use(middleware.roleBasedAcsess(['user']))

@@ -80,6 +80,10 @@ export default class AuthController {
     const user = await User.create(payload)
     await ctx.auth.use('web').login(user)
 
+    if (user!.role) {
+      return ctx.response.redirect('/user/dashboard')
+    }
+
     return this.ok(ctx, 'Registration successful', {
       data: user,
       redirect: '/dashboard',
@@ -121,7 +125,10 @@ export default class AuthController {
 
     await ctx.auth.use('web').login(user)
 
-    return ctx.response.redirect('/facilities')
+    if (user!.role) {
+      return ctx.response.redirect('/user/dashboard')
+    }
+
+    return ctx.response.redirect('/dashboard')
   }
 }
-

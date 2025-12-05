@@ -144,7 +144,7 @@ const EditBookingForm = ({ booking, facility, rooms }: EditBookingFormProps) => 
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Edit Peminjaman Barang</h1>
                 <p className="text-gray-600">
-                  Mengedit peminjaman **{itemDetail.name}** ID: **{booking.id}**
+                  Mengedit peminjaman {itemDetail.name} ID: {booking.id}
                 </p>
               </div>
             </div>
@@ -274,7 +274,7 @@ const EditBookingForm = ({ booking, facility, rooms }: EditBookingFormProps) => 
                       <p className="text-gray-600 text-sm mt-1">Jenis: {itemDetail.type}</p>
                       <div className="flex items-center mt-2 text-sm text-gray-500">
                         <MapPin className="h-4 w-4 mr-1" />
-                        Lokasi Penggunaan: **{itemDetail.location}**
+                        Lokasi Penggunaan: {itemDetail.location}
                       </div>
                       <div className="mt-2">
                         <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">

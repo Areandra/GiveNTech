@@ -15,7 +15,6 @@ export default class UsController {
   async me(ctx: HttpContext) {
     const user = ctx.auth.user!
 
-    console.log(user)
     const data = await UserService.getUserByCredential({ email: user.email }, ctx, false)
 
     ctx.response.ok({
@@ -70,7 +69,7 @@ export default class UsController {
     const userId = ctx.auth.user!.id
     const data = await BookingService.getBookings({ userId: userId, page })
 
-    ctx.response.ok({
+    return ctx.response.ok({
       succses: true,
       message: 'List of ur bookings',
       data,
@@ -93,7 +92,7 @@ export default class UsController {
 
     const data = await BookingService.getBooking(id, ctx.auth.user!.id)
 
-    ctx.response.ok({
+    return ctx.response.ok({
       succses: true,
       message: `Booking with id ${id} has found`,
       data,

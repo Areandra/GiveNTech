@@ -136,7 +136,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => router.visit(`/facilities/`)}
+                onClick={() => router.visit(`/user/dashboard`)}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-700" />
@@ -144,7 +144,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Peminjaman Barang</h1>
                 <p className="text-gray-600">
-                  Isi form untuk meminjam **{itemDetail.name}** ({itemDetail.type})
+                  Isi form untuk meminjam {itemDetail.name} ({itemDetail.type})
                 </p>
               </div>
             </div>
@@ -274,7 +274,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                       <p className="text-gray-600 text-sm mt-1">Jenis: {itemDetail.type}</p>
                       <div className="flex items-center mt-2 text-sm text-gray-500">
                         <MapPin className="h-4 w-4 mr-1" />
-                        Lokasi Penggunaan: **{itemDetail.location}**
+                        Lokasi Penggunaan: {itemDetail.location}
                       </div>
                       <div className="mt-2">
                         <span className="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">

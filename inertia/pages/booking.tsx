@@ -35,7 +35,11 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
     setProcessingAction(bookingId)
     try {
       await axios
-        .put('/api/v1/booking/' + bookingId, { status: 'Confirmed' }, { withCredentials: true })
+        .put(
+          '/api/v1/booking/' + bookingId,
+          { status: 'Confirmed', idApprover: user.id },
+          { withCredentials: true }
+        )
         .then(() => router.reload())
     } catch (error) {
       console.error('Gagal mengkonfirmasi booking:', error)
@@ -48,7 +52,11 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
     setProcessingAction(bookingId)
     try {
       await axios
-        .put('/api/v1/booking/' + bookingId, { status: 'Cancelled' }, { withCredentials: true })
+        .put(
+          '/api/v1/booking/' + bookingId,
+          { status: 'Cancelled', idApprover: user.id },
+          { withCredentials: true }
+        )
         .then(() => router.reload())
     } catch (error) {
       console.error('Gagal membatalkan booking:', error)
@@ -61,7 +69,11 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
     setProcessingAction(bookingId)
     try {
       await axios
-        .put('/api/v1/booking/' + bookingId, { status: 'Picked Up' }, { withCredentials: true })
+        .put(
+          '/api/v1/booking/' + bookingId,
+          { status: 'Picked Up', idApprover: user.id },
+          { withCredentials: true }
+        )
         .then(() => router.reload())
     } catch (error) {
       console.error('Gagal update status:', error)
@@ -74,7 +86,11 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
     setProcessingAction(bookingId)
     try {
       await axios
-        .put('/api/v1/booking/' + bookingId, { status: 'Returned' }, { withCredentials: true })
+        .put(
+          '/api/v1/booking/' + bookingId,
+          { status: 'Returned', idApprover: user.id },
+          { withCredentials: true }
+        )
         .then(() => router.reload())
     } catch (error) {
       console.error('Gagal update status:', error)
@@ -87,7 +103,11 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
     setProcessingAction(bookingId)
     try {
       await axios
-        .put('/api/v1/booking/' + bookingId, { status: 'Done' }, { withCredentials: true })
+        .put(
+          '/api/v1/booking/' + bookingId,
+          { status: 'Done', idApprover: user.id },
+          { withCredentials: true }
+        )
         .then(() => router.reload())
     } catch (error) {
       console.error('Gagal update status:', error)

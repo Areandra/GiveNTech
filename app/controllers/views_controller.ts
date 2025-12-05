@@ -125,6 +125,14 @@ export default class ViewsController {
 
     const data = await booking_service.getBooking(id)
 
+    if (!['Confirmed', 'Picked Up'].includes(data.status))
+      return ctx.inertia.render('errors/not_found')
+
+    if (ctx.auth.user!.role !== 'admin') {
+      if (ctx.auth.user!.id !== data.idUser)
+        return ctx.inertia.render('errors/forbidden', { redirectUrl: '/user/dashboard' })
+    }
+
     return ctx.inertia.render('qrcode', {
       idBooking: data.id,
       status: data.status,
@@ -222,5 +230,53 @@ export default class ViewsController {
     const facility = await Facility.findOrFail(ctx.params.facilityId)
 
     return ctx.inertia.render('facilityEdit', { user: ctx.auth.user, facility })
+  }
+
+  async userFacilities(ctx: HttpContext) {
+    const facilities = await Facility.query()
+
+    return ctx.inertia.render('userFacility', { facilities, user: ctx.auth.user })
+  }
+  async userDashboard(ctx: HttpContext) {
+    const userId = ctx.auth.user!.id
+    const bookings = await Booking.query()
+      .preload('user')
+      .preload('fasilitas')
+      .where('idUser', userId)
+    const facilities = await Facility.query()
+
+    return ctx.inertia.render('userDashboard', {
+      bookings: bookings,
+      facilities,
+      user: ctx.auth.user,
+    })
+  }
+
+  async userHistory(ctx: HttpContext) {
+    const facilities = await Facility.query()
+    const userId = ctx.auth.user!.id
+
+    const bookings = await Booking.query()
+      .preload('user')
+      .preload('fasilitas')
+      .where('idUser', userId)
+
+    return ctx.inertia.render('bookingHistory', { bookings, facilities, user: ctx.auth.user })
+  }
+
+  async detailBooking(ctx: HttpContext) {
+    const booking = await Booking.findOrFail(ctx.params.id)
+
+    await booking.load('fasilitas')
+    await booking.load('rooms')
+    await booking.load('user')
+    await booking.load('approver')
+
+    if (ctx.auth.user!.role !== 'admin') {
+      if (ctx.auth.user!.id !== booking.idUser)
+        return ctx.inertia.render('errors/forbidden', { redirectUrl: '/user/dashboard' })
+    }
+
+    return ctx.inertia.render('detailBooking', { booking, user: ctx.auth.user })
   }
 }

@@ -11,6 +11,7 @@ import {
   User,
   ChevronRight,
   ShieldCheck,
+  LogOut,
 } from 'lucide-react'
 import { MenuItem } from '../types/index'
 
@@ -77,6 +78,7 @@ const AdminLayout = ({ children, activeMenu, user }: AdminLayoutProps) => {
               <p className="text-red-200 text-xs">{user.role}</p>
             </div>
             <ShieldCheck className="w-4 h-4 ml-auto text-green-300" />
+            <LogOut onClick={() => router.post('/logout')} />
           </div>
         </div>
       </aside>

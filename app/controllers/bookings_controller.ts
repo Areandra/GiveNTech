@@ -68,7 +68,6 @@ export default class BookingsController {
   })
   async store(ctx: HttpContext) {
     const body = await ctx.request.validateUsing(BookingCreate)
-    console.log('contol', body)
     await BookingService.createBooking(body)
 
     ctx.response.ok({
