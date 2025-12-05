@@ -206,6 +206,7 @@ export default class ViewsController {
   async bookingForm(ctx: HttpContext) {
     const facility = await Facility.findOrFail(ctx.params.facilityId)
     const rooms = await Room.query()
+    if (facility.status !== 'Available') return ctx.inertia.render('errors/not_found')
 
     return ctx.inertia.render('bookingForm', { rooms, facility })
   }

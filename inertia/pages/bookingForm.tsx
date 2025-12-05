@@ -119,7 +119,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
       console.log(data)
       axios
         .post('/api/v1/me/booking', data, { withCredentials: true })
-        .then(() => router.visit('/dashboard'))
+        .then(() => router.visit('/user/dashboard'))
       // post('/api/v1/me/booking', {
       //   onSuccess: () => console.error('Submission Error:'),
       //   onError: (e) => console.error('Submission Error:', e),
