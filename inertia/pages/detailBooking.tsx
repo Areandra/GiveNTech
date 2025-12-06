@@ -13,6 +13,7 @@ import {
   User,
   XCircle,
   RefreshCw,
+  QrCode,
 } from 'lucide-react'
 
 // --- ASUMSI INTERFACE (Berdasarkan data yang diharapkan) ---
@@ -178,6 +179,17 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
                 </button>
               )}
             </div>
+            {booking.status === 'Confirmed' ||
+              (booking.status === 'Picked Up' && (
+                <button
+                  onClick={() => router.visit(`/booking/${booking.id}/qr`)}
+                  className="flex mt-4 justify-center w-full items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  title="Tampilkan QR Code"
+                >
+                  <QrCode className="h-8 w-4" />
+                  Tampilkan QR Code
+                </button>
+              ))}
           </div>
 
           {/* Section: Detail Barang dan Lokasi */}

@@ -19,6 +19,71 @@ interface FacilityFormProps {
   isEdit: boolean // Menandakan apakah ini mode edit atau create
 }
 
+const FormField: React.FC<{
+  id: keyof FacilityData
+  label: string
+  icon: React.FC<any>
+  isSelect?: boolean
+  options?: string[]
+  isDisabled?: boolean
+  data: any
+  setData: any
+  errors: any
+  isEdit: boolean
+}> = ({
+  id,
+  label,
+  icon: Icon,
+  isSelect = false,
+  options,
+  isDisabled = false,
+  data,
+  setData,
+  errors,
+  isEdit,
+}) => (
+  <div className="space-y-1">
+    <label htmlFor={id} className="text-sm font-medium text-gray-700 flex items-center">
+      <Icon className="w-4 h-4 mr-2 text-red-600" />
+      {label}
+    </label>
+    {isSelect && options ? (
+      <select
+        id={id}
+        value={data[id as 'type'] || data[id as 'status']}
+        onChange={(e) => setData(id as any, e.target.value)}
+        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white ${
+          isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''
+        } ${errors[id] ? 'border-red-500' : 'border-gray-300'}`}
+        required
+        disabled={isDisabled}
+      >
+        <option value="" disabled>
+          Pilih {label}
+        </option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input
+        id={id}
+        type="text"
+        value={data[id as 'name']}
+        onChange={(e) => setData(id as 'name', e.target.value as any)}
+        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+          errors[id] ? 'border-red-500' : 'border-gray-300'
+        }`}
+        placeholder={`Masukkan ${label.toLowerCase()}`}
+        required={!isEdit || id === 'name'} // name wajib di create, optional di update
+      />
+    )}
+    {errors[id] && <p className="text-sm text-red-500 mt-1">{errors[id]}</p>}
+  </div>
+)
+
 const FacilityForm: React.FC<FacilityFormProps> = ({ initialData, isEdit }) => {
   const { data, setData, processing, errors } = useForm<FacilityData>(
     initialData
@@ -86,56 +151,6 @@ const FacilityForm: React.FC<FacilityFormProps> = ({ initialData, isEdit }) => {
     'Damaged',
   ]
 
-  const FormField: React.FC<{
-    id: keyof FacilityData
-    label: string
-    icon: React.FC<any>
-    isSelect?: boolean
-    options?: string[]
-    isDisabled?: boolean
-  }> = ({ id, label, icon: Icon, isSelect = false, options, isDisabled = false }) => (
-    <div className="space-y-1">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700 flex items-center">
-        <Icon className="w-4 h-4 mr-2 text-red-600" />
-        {label}
-      </label>
-      {isSelect && options ? (
-        <select
-          id={id}
-          value={data[id as 'type'] || data[id as 'status']}
-          onChange={(e) => setData(id as any, e.target.value)}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white ${
-            isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''
-          } ${errors[id] ? 'border-red-500' : 'border-gray-300'}`}
-          required
-          disabled={isDisabled}
-        >
-          <option value="" disabled>
-            Pilih {label}
-          </option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          id={id}
-          type="text"
-          value={data[id as 'name']}
-          onChange={(e) => setData(id as 'name', e.target.value as any)}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
-            errors[id] ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder={`Masukkan ${label.toLowerCase()}`}
-          required={!isEdit || id === 'name'} // name wajib di create, optional di update
-        />
-      )}
-      {errors[id] && <p className="text-sm text-red-500 mt-1">{errors[id]}</p>}
-    </div>
-  )
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -143,14 +158,36 @@ const FacilityForm: React.FC<FacilityFormProps> = ({ initialData, isEdit }) => {
     >
       {/* Kolom Fasilitas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField id="name" label="Nama Fasilitas" icon={Building} />
-        <FormField id="type" label="Tipe Fasilitas" icon={Tag} isSelect options={facilityTypes} />
+        <FormField
+          id="name"
+          label="Nama Fasilitas"
+          icon={Building}
+          isEdit={isEdit}
+          data={data}
+          errors={errors}
+          setData={setData}
+        />
+        <FormField
+          id="type"
+          label="Tipe Fasilitas"
+          icon={Tag}
+          isSelect
+          options={facilityTypes}
+          isEdit={isEdit}
+          data={data}
+          errors={errors}
+          setData={setData}
+        />
       </div>
 
       {/* Bidang Status (Hanya Muncul di Mode Edit) */}
       {isEdit && (
         <div className="md:w-1/2">
           <FormField
+            isEdit={isEdit}
+            data={data}
+            errors={errors}
+            setData={setData}
             id="status"
             label="Status Fasilitas"
             icon={Wrench}

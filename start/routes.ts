@@ -36,7 +36,6 @@ router.group(() => {
       router.get('/facilities', '#controllers/views_controller.facility')
       router.get('/facilities/create', '#controllers/views_controller.facilityForm')
       router.get('/facilities/:facilityId/edit', '#controllers/views_controller.facilityEdit')
-      router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
       router.get('/qrScanner', '#controllers/views_controller.qrReader')
       router.get('/map', '#controllers/views_controller.map')
     })
@@ -49,10 +48,17 @@ router.group(() => {
       router.get('/user/facilities', '#controllers/views_controller.userFacilities')
       router.get('/user/booking/history', '#controllers/views_controller.userHistory')
       router.get('/booking/create/:facilityId', '#controllers/views_controller.bookingForm')
-      router.get('/booking/:id', '#controllers/views_controller.detailBooking')
     })
     .use(middleware.auth({ guards: ['web'] }))
     .use(middleware.roleBasedAcsess(['user']))
+
+  router
+    .group(() => {
+      router.get('/booking/:id/qr', '#controllers/views_controller.bookingQR')
+      router.get('/booking/:id', '#controllers/views_controller.detailBooking')
+    })
+    .use(middleware.auth({ guards: ['web'] }))
+    .use(middleware.roleBasedAcsess(['user', 'admin']))
 })
 
 router

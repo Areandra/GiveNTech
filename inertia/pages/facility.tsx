@@ -12,7 +12,6 @@ import {
   Wrench,
   Edit,
   Trash2,
-  Eye,
   Package,
   AlertCircle,
 } from 'lucide-react'
@@ -164,7 +163,7 @@ const facilities = ({ user, facilities }: any) => {
         </div>
       </header>
 
-      <main className="flex-1 p-6 bg-gray-50">
+      <main className="flex-1 mt-6 bg-gray-50">
         <Head title="Facility Management" />
 
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 mb-6">
@@ -320,13 +319,6 @@ const facilities = ({ user, facilities }: any) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => router.visit(`/facilities/${facility.id}`)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                            title="Lihat Detail"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
                           <button
                             onClick={() => router.visit(`/facilities/${facility.id}/edit`)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg"

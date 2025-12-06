@@ -29,13 +29,20 @@ export default function MapPage({ user, mapData }: any) {
   return (
     <AdminLayout user={user} activeMenu="/map">
       <Head title="Map View" />
-
-      <div>
-        <div className="flex items-center gap-3 mb-6">
-          <MapPin className="w-6 h-6 text-red-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Peta Lokasi Peminjaman Aktif</h1>
+      <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex">
+              <MapPin className="w-12 h-12 text-red-600 mr-4" />
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Map Tracking</h1>
+                <p className="text-gray-600 text-sm">Peta Lokasi Peminjaman Aktif</p>
+              </div>
+            </div>
+          </div>
         </div>
-
+      </header>
+      <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow border border-gray-200 p-4 flex items-center justify-between">
             <div>
@@ -77,7 +84,7 @@ export default function MapPage({ user, mapData }: any) {
 
         <div
           className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
-          style={{ height: 'calc(77vh)' }}
+          style={{ height: 'calc(73vh)' }}
         >
           <Suspense
             fallback={

@@ -15,6 +15,7 @@ import {
   Loader2,
   Check,
   X as XIcon,
+  QrCode,
 } from 'lucide-react'
 
 import axios from 'axios'
@@ -289,6 +290,16 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
   return (
     <AdminLayout user={user} activeMenu="/booking">
       <Head title="Booking Management Admin" />
+      <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-20 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Booking Management</h1>
+              <p className="text-gray-600 text-sm">Kelola semua Booking</p>
+            </div>
+          </div>
+        </div>
+      </header>
       <div className="bg-white rounded-xl shadow border border-gray-200 p-6 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="flex-1 relative">
@@ -461,6 +472,16 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
                           >
                             <Eye className="w-4 h-4" />
                           </button>
+                          {booking.status === 'Confirmed' ||
+                            (booking.status === 'Picked Up' && (
+                              <button
+                                onClick={() => router.visit(`/booking/${booking.id}/qr`)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                title="Tampilkan QR Code"
+                              >
+                                <QrCode className="h-4 w-4" />
+                              </button>
+                            ))}
                           <button
                             onClick={() => router.visit(`/booking/${booking.id}/edit`)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
