@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Head, router } from '@inertiajs/react'
 import {
   Building,
@@ -13,6 +13,8 @@ import {
   Tag,
   Hash,
 } from 'lucide-react'
+import BottomNav from '#components/BottomNav'
+import { io } from 'socket.io-client'
 
 export interface Facility {
   id: number
@@ -27,6 +29,14 @@ const UserFacilityList = ({ facilities = [{} as any] }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedType, setSelectedType] = useState('all')
   const [sortBy, setSortBy] = useState('name')
+
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
 
   const handleBookFacility = (facilityId: number) => {
     router.visit(`/booking/create/${facilityId}/`)
@@ -78,10 +88,10 @@ const UserFacilityList = ({ facilities = [{} as any] }) => {
   const uniqueTypes = Array.from(new Set(facilities.map((f) => f.type)))
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-24 md:pb-0">
       <Head title="Daftar Fasilitas" />
 
-      <div className="bg-white shadow border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white shadow border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -291,6 +301,8 @@ const UserFacilityList = ({ facilities = [{} as any] }) => {
           </div>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   )
 }

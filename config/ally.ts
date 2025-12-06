@@ -10,7 +10,7 @@ const allyConfig = defineConfig({
   googleSession: services.google({
     clientId: env.get('GOOGLE_CLIENT_ID'),
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
-    callbackUrl: 'http://localhost:3333/login/oauth/google/callback',
+    callbackUrl: 'https://gonial-noninspissating-greta.ngrok-free.dev/login/oauth/google/callback',
   }),
 })
 

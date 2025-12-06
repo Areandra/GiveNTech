@@ -1,5 +1,3 @@
-// File: resources/js/Pages/Rooms/EditRoom.tsx
-
 import React from 'react'
 import { Head, router } from '@inertiajs/react'
 import { Edit, ArrowLeft } from 'lucide-react'
@@ -26,9 +24,7 @@ const EditRoom: React.FC<EditRoomProps> = ({ room, user }) => {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Edit className="w-7 h-7 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">
-            Edit Ruangan: {room.roomName}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Edit Ruangan: {room.roomName}</h1>
         </div>
 
         <button
@@ -51,8 +47,12 @@ const EditRoom: React.FC<EditRoomProps> = ({ room, user }) => {
 
       <div className="mt-6 p-4 bg-gray-100 border rounded-xl text-sm text-gray-700">
         <p className="font-semibold">Informasi Sistem:</p>
-        <p>ID Ruangan: <span className="font-mono">ROOM-{room.id}</span></p>
-        <p>Koordinat: {room.latitude}, {room.longitude}</p>
+        <p>
+          ID Ruangan: <span className="font-mono">ROOM-{room.id}</span>
+        </p>
+        <p>
+          Koordinat: {room.latitude}, {room.longitude}
+        </p>
       </div>
     </AdminLayout>
   )

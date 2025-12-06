@@ -1,28 +1,26 @@
-// resources/js/Pages/Auth/Register.tsx
-
 import { useEffect, FormEventHandler } from 'react'
 import GuestLayout from '#layout/GuestLayout'
 import { Head, useForm, Link } from '@inertiajs/react'
 import { ArrowRight, Lock, Mail, User2 } from 'lucide-react'
-import { motion } from 'framer-motion' 
+import { motion } from 'framer-motion'
 
 export default function Register() {
   const { data, setData, post, processing, reset } = useForm({
-    name: '',
+    username: '',
     email: '',
     password: '',
-    password_confirmation: '',
   })
 
   useEffect(() => {
     return () => {
-      reset('password', 'password_confirmation')
+      reset('password')
     }
   }, [])
 
-  const submit: FormEventHandler = (e) => {
+  const submit: FormEventHandler = async (e) => {
     e.preventDefault()
-    post('register')
+
+    post('/register')
   }
 
   return (
@@ -30,34 +28,23 @@ export default function Register() {
       <Head title="Register" />
 
       <>
-        {/* Form Header (Dengan Motion) */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6"
         >
-          <h3 className="text-2xl font-bold text-gray-900 mb-1">
-            Create Your Account
-          </h3>
-          <p className="text-gray-600 text-sm">
-            Start managing facilities in minutes
-          </p>
+          <h3 className="text-2xl font-bold text-gray-900 mb-1">Create Your Account</h3>
+          <p className="text-gray-600 text-sm">Start managing facilities in minutes</p>
         </motion.div>
 
-        {/* Form (Dengan Motion) */}
         <motion.form
           onSubmit={submit}
           className="w-full space-y-4"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
         >
-          
-          {/* Name Field */}
           <div className="group">
-            <label
-              htmlFor="name"
-              className="block text-xs font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="name" className="block text-xs font-medium text-gray-700 mb-1">
               Full Name
             </label>
             <div className="relative">
@@ -68,23 +55,19 @@ export default function Register() {
                 id="name"
                 type="text"
                 name="name"
-                value={data.name}
-                onChange={(e) => setData('name', e.target.value)}
-                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg 
-                           focus:border-red-500 focus:ring-1 focus:ring-red-200 
+                value={data.username}
+                onChange={(e) => setData('username', e.target.value)}
+                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg
+                           focus:border-red-500 focus:ring-1 focus:ring-red-200
                            transition-all duration-200 hover:border-gray-300 text-sm"
-                placeholder="Full Name" 
+                placeholder="Full Name"
                 required
               />
             </div>
           </div>
 
-          {/* Email Field */}
           <div className="group">
-            <label
-              htmlFor="email"
-              className="block text-xs font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -97,21 +80,17 @@ export default function Register() {
                 name="email"
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
-                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg 
-                           focus:border-red-500 focus:ring-1 focus:ring-red-200 
+                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg
+                           focus:border-red-500 focus:ring-1 focus:ring-red-200
                            transition-all duration-200 hover:border-gray-300 text-sm"
-                placeholder="Email Address" 
+                placeholder="Email Address"
                 required
               />
             </div>
           </div>
-          
-          {/* Password Field */}
+
           <div className="group">
-            <label
-              htmlFor="password"
-              className="block text-xs font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
               Password
             </label>
             <div className="relative">
@@ -124,16 +103,15 @@ export default function Register() {
                 name="password"
                 value={data.password}
                 onChange={(e) => setData('password', e.target.value)}
-                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg 
-                           focus:border-red-500 focus:ring-1 focus:ring-red-200 
+                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg
+                           focus:border-red-500 focus:ring-1 focus:ring-red-200
                            transition-all duration-200 hover:border-gray-300 text-sm"
-                placeholder="Password" 
+                placeholder="Password"
                 required
               />
             </div>
           </div>
 
-          {/* Confirm Password Field */}
           <div className="group">
             <label
               htmlFor="password_confirmation"
@@ -149,20 +127,15 @@ export default function Register() {
                 id="password_confirmation"
                 type="password"
                 name="password_confirmation"
-                value={data.password_confirmation}
-                onChange={(e) =>
-                  setData('password_confirmation', e.target.value)
-                }
-                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg 
-                           focus:border-red-500 focus:ring-1 focus:ring-red-200 
+                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg
+                           focus:border-red-500 focus:ring-1 focus:ring-red-200
                            transition-all duration-200 hover:border-gray-300 text-sm"
-                placeholder="Confirm Password" 
+                placeholder="Confirm Password"
                 required
               />
             </div>
           </div>
 
-          {/* Terms & Conditions (Bagian ini dihapus) 
           <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
             <input
               type="checkbox"
@@ -172,28 +145,20 @@ export default function Register() {
             />
             <label htmlFor="terms" className="text-xs text-gray-600">
               I agree to the{' '}
-              <Link
-                href="/terms"
-                className="text-red-600 hover:text-red-700 font-medium"
-              >
+              <Link href="/terms" className="text-red-600 hover:text-red-700 font-medium">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link
-                href="/privacy"
-                className="text-red-600 hover:text-red-700 font-medium"
-              >
+              <Link href="/privacy" className="text-red-600 hover:text-red-700 font-medium">
                 Privacy Policy
               </Link>
             </label>
           </div>
-          */}
 
-          {/* Submit Button (Kompak) */}
           <button
             type="submit"
             disabled={processing}
-            className="w-full group relative overflow-hidden bg-gradient-to-r from-red-600 to-red-700 
+            className="w-full group relative overflow-hidden bg-gradient-to-r from-red-600 to-red-700
                          text-white p-3 rounded-lg font-semibold text-base
                          hover:from-red-700 hover:to-red-800 hover:shadow-lg
                          active:scale-[0.99] transition-all duration-200
@@ -216,20 +181,17 @@ export default function Register() {
           </button>
         </motion.form>
 
-        {/* Alternative Sign Up (Google) */}
         <motion.div
           className="mt-4 pt-4 border-t border-gray-200"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <p className="text-center text-gray-600 text-sm mb-3">
-            Or sign up with
-          </p>
-          
+          <p className="text-center text-gray-600 text-sm mb-3">Or sign up with</p>
+
           <button
             type="button"
-            className="w-full p-3 border-2 border-gray-200 rounded-lg hover:border-red-300 
+            className="w-full p-3 border-2 border-gray-200 rounded-lg hover:border-red-300
                            hover:bg-red-50 transition-all duration-200 flex items-center justify-center gap-2 font-semibold"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -252,10 +214,8 @@ export default function Register() {
             </svg>
             Google
           </button>
-
         </motion.div>
 
-        {/* Login Link (Kompak) */}
         <div className="mt-4 text-center text-sm">
           <p className="text-gray-600">
             Already have an account?{' '}

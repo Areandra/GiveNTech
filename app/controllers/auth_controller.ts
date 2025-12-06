@@ -30,24 +30,18 @@ export default class AuthController {
     const body = await ctx.request.validateUsing(UsersValidator.login)
     const data = await UserService.getUserByCredential(body, ctx)
 
+    await data.user.refresh()
+
+    if (data?.user.role === 'user') {
+      return ctx.response.redirect('/user/dashboard')
+    }
+
     return this.ok(ctx, 'Login successful', {
       token: data.token,
       data: data.user,
     })
   }
 
-  @ApiOperation({ summary: 'Login User (Session Cookies)' })
-  @ApiBody({ type: () => UsersValidator.login })
-  @ApiResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        message: { type: 'string' },
-        redirect: { type: 'string' },
-      },
-    },
-  })
   async sessionLogin(ctx: HttpContext) {
     const { email, password } = await ctx.request.validateUsing(UsersValidator.login)
 
@@ -61,33 +55,14 @@ export default class AuthController {
     // })
   }
 
-  @ApiOperation({ summary: 'Register User (Session Cookies)' })
-  @ApiBody({ type: () => UsersValidator.create })
-  @ApiResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        message: { type: 'string' },
-        data: { $ref: '#/components/schemas/User' },
-        redirect: { type: 'string' },
-      },
-    },
-  })
   async sessionRegister(ctx: HttpContext) {
     const payload = await ctx.request.validateUsing(UsersValidator.create)
 
+    console.log('register', payload)
     const user = await User.create(payload)
     await ctx.auth.use('web').login(user)
 
-    if (user!.role) {
-      return ctx.response.redirect('/user/dashboard')
-    }
-
-    return this.ok(ctx, 'Registration successful', {
-      data: user,
-      redirect: '/dashboard',
-    })
+    return ctx.response.redirect('/user/dashboard')
   }
 
   @ApiOperation({ summary: 'Google OAuth2 (API Token)' })
@@ -125,7 +100,11 @@ export default class AuthController {
 
     await ctx.auth.use('web').login(user)
 
-    if (user!.role) {
+    await user.refresh()
+
+    console.log('cek', user)
+
+    if (user?.role === 'user') {
       return ctx.response.redirect('/user/dashboard')
     }
 

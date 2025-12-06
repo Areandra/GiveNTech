@@ -1,4 +1,5 @@
 import FacilityService from '#services/fasility_service'
+import web_socket_service from '#services/web_socket_service'
 import FacilityValidator from '#validators/facility'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/openapi/decorators'
@@ -76,6 +77,8 @@ export default class FasilitiesController {
     const body = await ctx.request.validateUsing(FacilityCreate)
     await FacilityService.createFacility(body)
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
     ctx.response.ok({
       succses: true,
       message: 'Facility created',
@@ -103,6 +106,8 @@ export default class FasilitiesController {
     const body = await ctx.request.validateUsing(FacilityUpdate)
     await FacilityService.updateFacility(id, body)
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
     ctx.response.ok({
       succses: true,
       message: 'Facility updated',
@@ -128,6 +133,8 @@ export default class FasilitiesController {
     const id = ctx.params.id
     await FacilityService.deleteFacility(id)
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
     ctx.response.ok({
       succses: true,
       message: 'Facility deleted',

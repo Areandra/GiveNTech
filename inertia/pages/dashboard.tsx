@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Head } from '@inertiajs/react'
 import { Building, Search, CheckCircle, Wrench, Calendar } from 'lucide-react'
 import AdminLayout from '../layout/AuthenticatedLayout'
+import { io } from 'socket.io-client'
+import { router } from '@inertiajs/core'
 
 interface DashboardProps {
   grafik: any
@@ -15,6 +17,14 @@ interface DashboardProps {
 }
 
 const DashboardPage = ({ user, stats, grafik }: DashboardProps) => {
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 

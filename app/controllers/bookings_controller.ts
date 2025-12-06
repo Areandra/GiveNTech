@@ -1,4 +1,5 @@
 import BookingService from '#services/booking_service'
+import web_socket_service from '#services/web_socket_service'
 import BookingsValidator from '#validators/booking'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/openapi/decorators'
@@ -70,6 +71,9 @@ export default class BookingsController {
     const body = await ctx.request.validateUsing(BookingCreate)
     await BookingService.createBooking(body)
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
+
     ctx.response.ok({
       succses: true,
       message: 'Booking created',
@@ -94,11 +98,14 @@ export default class BookingsController {
   async update(ctx: HttpContext) {
     const id = ctx.params.id
     const body = await ctx.request.validateUsing(BookingUpdate, {
-      meta: { userRole: ctx.auth.user?.role || "user" },
+      meta: { userRole: ctx.auth.user?.role || 'user' },
     })
     await BookingService.updateBooking(id, {
       ...body,
     })
+
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
 
     ctx.response.ok({
       succses: true,
@@ -123,6 +130,9 @@ export default class BookingsController {
   async destroy(ctx: HttpContext) {
     const id = ctx.params.id
     await BookingService.deleteBooking(id)
+
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
 
     ctx.response.ok({
       succses: true,

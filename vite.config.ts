@@ -21,4 +21,10 @@ export default defineConfig({
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
     inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
   ],
+
+  server: {
+    host: true,
+    strictPort: false,
+    allowedHosts: true,
+  },
 })

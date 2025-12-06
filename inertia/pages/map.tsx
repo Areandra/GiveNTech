@@ -1,14 +1,24 @@
-import { useMemo, Suspense, lazy } from 'react'
+import { useMemo, Suspense, lazy, useEffect } from 'react'
 import { Head } from '@inertiajs/react'
 
 import AdminLayout from '../layout/AuthenticatedLayout'
 import { Loader2, AlertTriangle, MapPin } from 'lucide-react'
+import { io } from 'socket.io-client'
+import { router } from '@inertiajs/core'
 
 const DynamicMap = lazy(() => import('#components/DynamicMap'))
 
 const defaultCenter: [number, number] = [-0.8416396128141402, 119.89278946944664]
 
 export default function MapPage({ user, mapData }: any) {
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
+
   const { validMarkers, mapCenter } = useMemo(() => {
     const currentValidMarkers =
       mapData?.filter(

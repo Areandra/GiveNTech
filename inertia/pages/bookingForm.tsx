@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Head, router, useForm } from '@inertiajs/react'
 import {
   Calendar,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 import axios from 'axios'
+import { io } from 'socket.io-client'
 
 interface Room {
   id: number
@@ -38,6 +39,16 @@ interface BookingFormProps {
 }
 
 const BookingForm = ({ facility, rooms }: BookingFormProps) => {
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+
+    if (facility.status !== 'Available') window.location.reload()
+  }, [])
+
   const { data, setData, processing, errors } = useForm({
     idFacility: facility?.id,
     idRoom: '',
@@ -100,7 +111,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (step === 1) {
@@ -117,9 +128,8 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
       setStep(3)
     } else if (step === 3) {
       console.log(data)
-      axios
-        .post('/api/v1/me/booking', data, { withCredentials: true })
-        .then(() => router.visit('/user/dashboard'))
+      axios.post('/api/v1/me/booking', data, { withCredentials: true })
+      router.visit('/user/dashboard')
       // post('/api/v1/me/booking', {
       //   onSuccess: () => console.error('Submission Error:'),
       //   onError: (e) => console.error('Submission Error:', e),
@@ -131,32 +141,32 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
     <div className="min-h-screen bg-gray-50">
       <Head title="Peminjaman Fasilitas" />
 
+      {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.visit(`/user/dashboard`)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-700" />
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Peminjaman Barang</h1>
-                <p className="text-gray-600">
-                  Isi form untuk meminjam {itemDetail.name} ({itemDetail.type})
-                </p>
-              </div>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex flex-row justify-between items-center sm:items-center gap-4">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => router.visit(`/user/dashboard`)}
+              className="p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowLeft className="h-5 w-5 text-gray-700" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Form Peminjaman</h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                {itemDetail.name} ({itemDetail.type})
+              </p>
             </div>
-            <Package className="h-8 w-8 text-red-600" />
           </div>
+          <Package className="h-8 w-8 text-red-600" />
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-8">
+      {/* Stepper */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           {[1, 2, 3].map((stepNumber) => (
-            <div key={stepNumber} className="flex items-center">
+            <div key={stepNumber} className="flex items-center flex-1 sm:flex-none">
               <div
                 className={`flex items-center justify-center h-10 w-10 rounded-full ${
                   stepNumber === step
@@ -173,7 +183,7 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                 )}
               </div>
               <div
-                className={`ml-2 font-medium ${
+                className={`ml-2 font-medium text-sm sm:text-base ${
                   stepNumber === step
                     ? 'text-red-600'
                     : stepNumber < step
@@ -187,20 +197,21 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               </div>
               {stepNumber < 3 && (
                 <div
-                  className={`h-1 w-12 mx-2 ${stepNumber < step ? 'bg-green-500' : 'bg-gray-200'}`}
+                  className={`h-1 w-12 mx-2 sm:mx-4 ${stepNumber < step ? 'bg-green-500' : 'bg-gray-200'}`}
                 />
               )}
             </div>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit}>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Step 1 */}
           {step === 1 && (
-            <div className="bg-white rounded-xl shadow p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-xl shadow p-6 sm:p-8">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-6">
                 Tentukan Lokasi & Waktu Peminjaman
               </h2>
-
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -224,52 +235,53 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                   {errors.idRoom && <p className="mt-1 text-sm text-red-600">{errors.idRoom}</p>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="inline h-4 w-4 mr-2" />
-                    Tanggal Peminjaman
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={displayDate}
-                    onChange={handleDateChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Calendar className="inline h-4 w-4 mr-2" />
+                      Tanggal Peminjaman
+                    </label>
+                    <input
+                      type="date"
+                      value={displayDate}
+                      onChange={handleDateChange}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Clock className="inline h-4 w-4 mr-2" />
+                      Waktu Peminjaman
+                    </label>
+                    <select
+                      name="startTime"
+                      value={displayTime}
+                      onChange={handleTimeChange}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Pilih waktu peminjaman</option>
+                      {timeSlots.map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.bookingDate && (
+                      <p className="mt-1 text-sm text-red-600">{errors.bookingDate}</p>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="inline h-4 w-4 mr-2" />
-                    Waktu Peminjaman
-                  </label>
-                  <select
-                    name="startTime"
-                    value={displayTime}
-                    onChange={handleTimeChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Pilih waktu peminjaman</option>
-                    {timeSlots.map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.bookingDate && (
-                    <p className="mt-1 text-sm text-red-600">{errors.bookingDate}</p>
-                  )}
-                </div>
-
-                <div className="bg-gray-50 rounded-xl p-6 border">
-                  <div className="flex items-start">
-                    <div className="p-3 bg-red-100 rounded-lg mr-4">
+                {/* Item Detail */}
+                <div className="bg-gray-50 rounded-xl p-4 sm:p-6 border">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="p-3 bg-red-100 rounded-lg">
                       <Package className="h-6 w-6 text-red-600" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-bold text-gray-900">{itemDetail.name}</h3>
                       <p className="text-gray-600 text-sm mt-1">Jenis: {itemDetail.type}</p>
                       <div className="flex items-center mt-2 text-sm text-gray-500">
@@ -287,7 +299,6 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               </div>
             </div>
           )}
-
           {step === 2 && (
             <div className="bg-white rounded-xl shadow p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Detail Peminjaman</h2>
@@ -338,7 +349,6 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
               </div>
             </div>
           )}
-
           {step === 3 && (
             <div className="bg-white rounded-xl shadow p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Konfirmasi Peminjaman</h2>
@@ -404,9 +414,9 @@ const BookingForm = ({ facility, rooms }: BookingFormProps) => {
                 </div>
               </div>
             </div>
-          )}
-
-          <div className="mt-8 flex justify-between">
+          )}{' '}
+          {/* Tombol Navigasi */}
+          <div className="mt-6 flex flex-col sm:flex-row justify-between gap-3">
             {step > 1 && (
               <button
                 type="button"

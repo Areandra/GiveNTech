@@ -125,7 +125,7 @@ export default function QRCodePage(props: any) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">
+      <div className="max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">
         <div className="flex items-center space-x-4 h-16">
           <div className="flex-shrink-0">
             <Building className="h-8 w-8 text-red-600" />

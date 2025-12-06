@@ -1,6 +1,7 @@
 import User from '#models/user'
 import BookingService from '#services/booking_service'
 import UserService from '#services/user_service'
+import web_socket_service from '#services/web_socket_service'
 import BookingsValidator from '#validators/booking'
 import UsersValidator from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -118,6 +119,9 @@ export default class UsController {
     const body = await ctx.request.validateUsing(BookingsValidator.create)
     await BookingService.createBooking(body, ctx.auth.user!.id)
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
+
     ctx.response.ok({
       succses: true,
       message: 'Booking created',
@@ -151,6 +155,8 @@ export default class UsController {
       ctx.auth.user!.id
     )
 
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
     ctx.response.ok({
       succses: true,
       message: 'Booking updated',
@@ -174,7 +180,8 @@ export default class UsController {
   async destroyBooking(ctx: HttpContext) {
     const id = ctx.params.id
     await BookingService.deleteBooking(id, ctx.auth.user!.id)
-
+    web_socket_service?.io?.emit('bookingReload')
+    web_socket_service?.io?.emit('facilityReload')
     ctx.response.ok({
       succses: true,
       message: 'Booking deleted',

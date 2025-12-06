@@ -15,7 +15,6 @@ const UsersController = () => import('#controllers/users_controller')
 const BookingsController = () => import('#controllers/bookings_controller')
 const UsController = () => import('#controllers/us_controller')
 const RoomsController = () => import('#controllers/rooms_controller')
-router.on('/').redirect('/facilities')
 
 router.group(() => {
   router.get('/login/oauth/google', '#controllers/auth_controller.oauth2Session')
@@ -42,7 +41,6 @@ router.group(() => {
       router.get('/room', '#controllers/views_controller.room')
       router.get('/room/create', '#controllers/views_controller.roomForm')
       router.get('/room/:roomId/edit', '#controllers/views_controller.roomEdit')
-      
     })
     .use(middleware.auth({ guards: ['web'] }))
     .use(middleware.roleBasedAcsess(['admin']))
@@ -136,4 +134,15 @@ router.get('/redirect/*', async ({ params, response }) => {
   return response.redirect(`/${path}`)
 })
 
+router
+  .get('/', (ctx) => {
+    const role = ctx.auth.user?.role
 
+    switch (role) {
+      case 'admin':
+        return ctx.response.redirect('/dashboard')
+      case 'user':
+        return ctx.response.redirect('/user/dashboard')
+    }
+  })
+  .use(middleware.auth({ guards: ['web'] }))

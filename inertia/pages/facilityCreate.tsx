@@ -8,7 +8,6 @@ const CreateFacility = ({ user }: any) => {
     <AdminLayout user={user} activeMenu="/facilities">
       <Head title="Tambah Fasilitas Baru" />
 
-      {/* Header Halaman */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Building className="w-7 h-7 text-red-600" />
@@ -23,7 +22,6 @@ const CreateFacility = ({ user }: any) => {
         </button>
       </div>
 
-      {/* Konten Formulir */}
       <FacilityForm isEdit={false} />
     </AdminLayout>
   )

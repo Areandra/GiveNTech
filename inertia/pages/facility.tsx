@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Head, router } from '@inertiajs/react'
 import {
   Building,
@@ -16,6 +16,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import AdminLayout from '#layout/AuthenticatedLayout'
+import { io } from 'socket.io-client'
 
 interface Facility {
   id: number
@@ -27,6 +28,14 @@ interface Facility {
 }
 
 const facilities = ({ user, facilities }: any) => {
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
+
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')

@@ -1,18 +1,14 @@
-// File: resources/js/Pages/Facilities/EditFacility.tsx (Revisi)
-
 import React from 'react'
 import { Head, router } from '@inertiajs/react'
 import { ArrowLeft, Edit } from 'lucide-react'
 import FacilityForm from '#components/FacilityForm'
 import AdminLayout from '#layout/AuthenticatedLayout'
 
-// Tipe data fasilitas (sesuai dengan skema VineJS + ID)
 interface Facility {
   id: number
   name: string
   type: string
   status: 'Available' | 'Booked' | 'Borrowed' | 'Under Inspection' | 'Maintenance' | 'Damaged'
-  // Tidak ada location dan capacity lagi
 }
 
 interface EditFacilityProps {
@@ -25,7 +21,6 @@ const EditFacility: React.FC<EditFacilityProps> = ({ facility, user }) => {
     <AdminLayout user={user} activeMenu="/facilities">
       <Head title={`Edit Fasilitas: ${facility.name}`} />
 
-      {/* Header Halaman */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Edit className="w-7 h-7 text-red-600" />
@@ -40,7 +35,6 @@ const EditFacility: React.FC<EditFacilityProps> = ({ facility, user }) => {
         </button>
       </div>
 
-      {/* Konten Formulir */}
       <FacilityForm
         isEdit={true}
         initialData={{
@@ -51,7 +45,6 @@ const EditFacility: React.FC<EditFacilityProps> = ({ facility, user }) => {
         }}
       />
 
-      {/* Detail Tambahan (Contoh) */}
       <div className="mt-6 p-4 bg-gray-100 rounded-xl border border-gray-200 text-sm text-gray-600">
         <p className="font-semibold text-gray-700 mb-1">Informasi Sistem:</p>
         <p>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Head, router } from '@inertiajs/react'
 import {
   Calendar,
@@ -15,8 +15,7 @@ import {
   RefreshCw,
   QrCode,
 } from 'lucide-react'
-
-// --- ASUMSI INTERFACE (Berdasarkan data yang diharapkan) ---
+import { io } from 'socket.io-client'
 
 interface Approver {
   username: string
@@ -33,7 +32,7 @@ interface Facility {
   id: number
   name: string
   type: string
-  status: string // Status Fasilitas, e.g., 'Booked'
+  status: string
 }
 
 interface Booking {
@@ -41,13 +40,13 @@ interface Booking {
   idUser: number
   idFacility: number
   idRoom: number
-  bookingDate: string // YYYY-MM-DDTHH:mm:ss
+  bookingDate: string
   purpose: string
   notes: string | null
   status: 'Pending' | 'Confirmed' | 'Picked Up' | 'Returned' | 'Cancelled' | 'Penalized'
   createdAt: string
   updatedAt: string
-  approver?: Approver // Detail Approver jika ada
+  approver?: Approver
   fasilitas: Facility
   rooms: Room
 }
@@ -56,8 +55,6 @@ interface BookingDetailProps {
   booking: Booking
   user: any
 }
-
-// --- FUNGSI HELPER ---
 
 const getStatusConfig = (status: Booking['status']) => {
   const config = {
@@ -95,9 +92,15 @@ const getStatusConfig = (status: Booking['status']) => {
   return config[status] || config.Pending
 }
 
-// --- KOMPONEN UTAMA ---
-
 const BookingDetail = ({ booking, user }: BookingDetailProps) => {
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
+
   const statusConfig = getStatusConfig(booking.status)
 
   const datePart = booking.bookingDate.toString().split('T')[0]
@@ -115,7 +118,6 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
     <div className="min-h-screen bg-gray-50">
       <Head title={`Detail Booking #${booking.id}`} />
 
-      {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -123,7 +125,7 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
               <button
                 onClick={() =>
                   router.visit(user.role === 'user' ? `/user/dashboard` : `/dashboard`)
-                } // Kembali ke Riwayat
+                }
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-700" />
@@ -143,10 +145,8 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="space-y-6">
-          {/* Section: Ringkasan Status & Aksi */}
           <div className="bg-white rounded-xl shadow p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
@@ -192,7 +192,6 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
               ))}
           </div>
 
-          {/* Section: Detail Barang dan Lokasi */}
           <div className="bg-white rounded-xl shadow p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <Package className="h-5 w-5 text-red-600 mr-2" />
@@ -212,7 +211,6 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
             </div>
           </div>
 
-          {/* Section: Detail Waktu & Tujuan */}
           <div className="bg-white rounded-xl shadow p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <Calendar className="h-5 w-5 text-red-600 mr-2" />
@@ -238,7 +236,6 @@ const BookingDetail = ({ booking, user }: BookingDetailProps) => {
             </div>
           </div>
 
-          {/* Section: Informasi Tambahan */}
           <div className="bg-white rounded-xl shadow p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <User className="h-5 w-5 text-red-600 mr-2" />

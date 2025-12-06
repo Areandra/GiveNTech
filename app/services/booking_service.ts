@@ -1,5 +1,6 @@
 import Booking from '#models/booking'
 import Facility from '#models/facility'
+import web_socket_service from './web_socket_service.js'
 
 class BookingService {
   private bookingQuery(userId?: number) {
@@ -29,6 +30,12 @@ class BookingService {
 
     facility.status = 'Booked'
     await facility.save()
+
+    console.log('percobaan dilkukan')
+
+    web_socket_service.io?.emit('bookingReload')
+
+    console.log('apakah teradi')
 
     return booking
   }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Head, router } from '@inertiajs/react'
 import {
   Calendar,
@@ -21,6 +21,7 @@ import {
 import axios from 'axios'
 import AdminLayout from '../layout/AuthenticatedLayout'
 import { Booking, BookingStatus } from '~/types/index'
+import { io } from 'socket.io-client'
 
 interface BookingManagementPageProps {
   bookingsData: Booking[]
@@ -29,8 +30,17 @@ interface BookingManagementPageProps {
 
 const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProps) => {
   const [searchQuery, setSearchQuery] = useState('')
+
   const [statusFilter, setStatusFilter] = useState('all')
   const [processingAction, setProcessingAction] = useState<number | null>(null)
+
+  useEffect(() => {
+    io().on('bookingReload', () => router.reload())
+    io().on('facilityReload', () => router.reload())
+
+    io().off('bookingReload', () => router.reload())
+    io().off('facilityReload', () => router.reload())
+  }, [])
 
   const handleConfirm = async (bookingId: number) => {
     setProcessingAction(bookingId)
@@ -483,7 +493,7 @@ const BookingManagementPage = ({ user, bookingsData }: BookingManagementPageProp
                               </button>
                             ))}
                           <button
-                            onClick={() => router.visit(`/booking/${booking.id}/edit`)}
+                            onClick={() => router.visit(`booking/${booking.id}/edit`)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
                             title="Edit"
                           >

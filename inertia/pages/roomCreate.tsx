@@ -1,5 +1,3 @@
-// File: resources/js/Pages/Rooms/CreateRoom.tsx
-
 import { Head, router } from '@inertiajs/react'
 import { Building2, ArrowLeft } from 'lucide-react'
 import AdminLayout from '../layout/AuthenticatedLayout'

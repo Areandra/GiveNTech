@@ -224,6 +224,7 @@ import Room from '#models/room'
 import Booking from '#models/booking'
 import RoomsValidator from '#validators/room' // Asumsi path ke RoomsValidator Anda
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/openapi/decorators'
+import web_socket_service from '#services/web_socket_service'
 
 // Ambil skema kompilasi dari RoomsValidator
 const RoomCreate = RoomsValidator.create
@@ -318,6 +319,8 @@ export default class RoomsController {
     // 2. Buat Room baru
     await Room.create(payload)
 
+    web_socket_service?.io?.emit('roomReload')
+
     ctx.response.created({
       // Menggunakan .created()
       success: true,
@@ -354,6 +357,8 @@ export default class RoomsController {
     room.merge(payload)
     await room.save()
 
+    web_socket_service?.io?.emit('roomReload')
+
     ctx.response.ok({
       success: true,
       message: 'Room updated successfully',
@@ -382,6 +387,8 @@ export default class RoomsController {
     const id = ctx.params.id
     const room = await Room.findOrFail(id)
     await room.delete()
+
+    web_socket_service?.io?.emit('roomReload')
 
     ctx.response.ok({
       success: true,

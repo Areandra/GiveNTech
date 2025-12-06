@@ -255,6 +255,7 @@ export default class ViewsController {
   }
 
   async userHistory(ctx: HttpContext) {
+    console.log('anj')
     const facilities = await Facility.query()
     const userId = ctx.auth.user!.id
 
@@ -284,9 +285,9 @@ export default class ViewsController {
 
   async room(ctx: HttpContext) {
   const room = await Room.query()
- 
 
-  
+
+
   return ctx.inertia.render('room', {
     rooms: room,
     user: ctx.auth.user
