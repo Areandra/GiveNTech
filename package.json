@@ -81,6 +81,7 @@
     "@yudiel/react-qr-scanner": "^2.4.1",
     "chartjs-node-canvas": "^5.0.0",
     "edge.js": "^6.2.1",
+    "framer-motion": "^12.23.25",
     "graphql": "^16.12.0",
     "graphql-scalars": "^1.25.0",
     "leaflet": "^1.9.4",

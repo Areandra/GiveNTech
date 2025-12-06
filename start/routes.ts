@@ -24,6 +24,7 @@ router.group(() => {
   router.get('/register', '#controllers/views_controller.register')
   router.post('/login', '#controllers/auth_controller.sessionLogin')
   router.post('/register', '#controllers/auth_controller.sessionRegister')
+  router.get('/forgot-password', '#controllers/views_controller.forgotPassword')
   router.post('/logout', async ({ auth, response }) => {
     await auth.use('web').logout()
     return response.redirect('/login')
@@ -38,6 +39,10 @@ router.group(() => {
       router.get('/facilities/:facilityId/edit', '#controllers/views_controller.facilityEdit')
       router.get('/qrScanner', '#controllers/views_controller.qrReader')
       router.get('/map', '#controllers/views_controller.map')
+      router.get('/room', '#controllers/views_controller.room')
+      router.get('/room/create', '#controllers/views_controller.roomForm')
+      router.get('/room/:roomId/edit', '#controllers/views_controller.roomEdit')
+      
     })
     .use(middleware.auth({ guards: ['web'] }))
     .use(middleware.roleBasedAcsess(['admin']))
@@ -130,3 +135,5 @@ router.get('/redirect/*', async ({ params, response }) => {
   const path = params['*']
   return response.redirect(`/${path}`)
 })
+
+

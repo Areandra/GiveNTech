@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ShieldCheck,
   LogOut,
+  Boxes,
 } from 'lucide-react'
 import { MenuItem } from '../types/index'
 
@@ -23,8 +24,9 @@ interface AdminLayoutProps {
 
 const menuItems: MenuItem[] = [
   { icon: Home, label: 'Dashboard', href: '/dashboard' },
+  { icon: Boxes, label: 'Facility', href: '/facilities' },
+  { icon: Building, label: 'Room', href: '/room' },
   { icon: Calendar, label: 'Booking', href: '/booking' },
-  { icon: Building, label: 'Facility', href: '/facilities' },
   { icon: MapPin, label: 'Map View', href: '/map' },
   { icon: QrCode, label: 'QR Scanner', href: '/qrScanner' },
 ]

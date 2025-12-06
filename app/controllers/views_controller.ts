@@ -2,6 +2,7 @@ import Booking from '#models/booking'
 import Facility from '#models/facility'
 import Room from '#models/room'
 import User from '#models/user'
+
 import booking_service from '#services/booking_service'
 // import FacilityService from '#services/fasility_service'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -280,4 +281,33 @@ export default class ViewsController {
 
     return ctx.inertia.render('detailBooking', { booking, user: ctx.auth.user })
   }
+
+  async room(ctx: HttpContext) {
+  const room = await Room.query()
+ 
+
+  
+  return ctx.inertia.render('room', {
+    rooms: room,
+    user: ctx.auth.user
+  })
 }
+
+async roomForm(ctx: HttpContext) {
+    return ctx.inertia.render('roomCreate', { user: ctx.auth.user })
+  }
+
+  async roomEdit(ctx: HttpContext) {
+    const room = await Room.findOrFail(ctx.params.roomId)
+
+    return ctx.inertia.render('roomEdit', { user: ctx.auth.user, room })
+  }
+
+async forgotPassword(ctx: HttpContext) {
+    return ctx.inertia.render('auth/forgotPassword', { user: ctx.auth.user })
+  }
+
+}
+
+
+
