@@ -3,7 +3,7 @@ import Facility from '#models/facility'
 class FacilityService {
   async listFacilities(page?: number) {
     if (page) {
-      return Facility.query().paginate(page)
+      return Facility.query()
     }
     return Facility.query().orderBy('name', 'asc')
   }

@@ -8,30 +8,39 @@ export default class Room extends BaseModel {
   public static table = 'rooms'
 
   @column({ isPrimary: true })
-  @ApiProperty()
+  @ApiProperty({ type: 'integer', example: 1 })
   declare id: number
 
   @column()
-  @ApiProperty()
+  @ApiProperty({ type: 'string', example: 'Ruang Seminar 101' })
   declare roomName: string
 
-  @column()
-  @ApiProperty()
+  @column({ consume: (value: string | number) => Number(value) })
+  @ApiProperty({
+    type: 'number',
+    format: 'float',
+    example: 106.8271,
+    description: 'Bujur lokasi ruangan',
+  })
   declare longitude: number
 
-  @column()
-  @ApiProperty()
+  @column({ consume: (value: string | number) => Number(value) })
+  @ApiProperty({
+    type: 'number',
+    format: 'float',
+    example: -6.1754,
+    description: 'Lintang lokasi ruangan',
+  })
   declare latitude: number
 
   @column.dateTime({ autoCreate: true })
-  @ApiProperty()
+  @ApiProperty({ type: 'string', format: 'date-time', example: '2025-11-20T10:00:00.000Z' })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  @ApiProperty()
+  @ApiProperty({ type: 'string', format: 'date-time', example: '2025-11-27T14:30:00.000Z' })
   declare updatedAt: DateTime
 
   @hasMany(() => Booking, { foreignKey: 'idRoom' })
-  @ApiProperty({ type: () => Booking })
   declare bookings: HasMany<typeof Booking>
 }

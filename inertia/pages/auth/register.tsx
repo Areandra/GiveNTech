@@ -1,7 +1,7 @@
 import { useEffect, FormEventHandler } from 'react'
 import GuestLayout from '#layout/GuestLayout'
 import { Head, useForm, Link } from '@inertiajs/react'
-import { ArrowRight, Lock, Mail, User2 } from 'lucide-react'
+import { ArrowRight, CardSim, Lock, Mail, User2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Register() {
@@ -9,6 +9,7 @@ export default function Register() {
     username: '',
     email: '',
     password: '',
+    phoneNumber: '',
   })
 
   useEffect(() => {
@@ -61,6 +62,43 @@ export default function Register() {
                            focus:border-red-500 focus:ring-1 focus:ring-red-200
                            transition-all duration-200 hover:border-gray-300 text-sm"
                 placeholder="Full Name"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="group">
+            <label htmlFor="phoneNumber" className="block text-xs font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <CardSim className="h-4 w-4 text-gray-400 group-focus-within:text-red-600" />
+              </div>
+              <input
+                id="phoneNumber"
+                type="number"
+                value={data.phoneNumber}
+                onChange={(e) => {
+                  let value = e.target.value
+                  const prefix = '62'
+
+                  value = value.replace(/\D/g, '')
+
+                  if (value.length > prefix.length && value.startsWith(prefix + '0')) {
+                    value = prefix + value.substring(prefix.length + 1)
+                  }
+
+                  if (!value.startsWith(prefix) || value.length < prefix.length) {
+                    value = prefix
+                  }
+
+                  setData('phoneNumber', value)
+                }}
+                className="pl-9 w-full p-3 border-2 border-gray-200 rounded-lg
+                       focus:border-red-500 focus:ring-1 focus:ring-red-200
+                       transition-all duration-200 hover:border-gray-300 text-sm"
+                placeholder="628xxxxxxxxxx"
                 required
               />
             </div>

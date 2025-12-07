@@ -2,9 +2,7 @@ import Booking from '#models/booking'
 import Facility from '#models/facility'
 import Room from '#models/room'
 import User from '#models/user'
-
 import booking_service from '#services/booking_service'
-// import FacilityService from '#services/fasility_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas'
 import { DateTime } from 'luxon'
@@ -113,9 +111,6 @@ export default class ViewsController {
   }
 
   async facility(ctx: HttpContext) {
-    // const page = await ctx.request.input('page', 1)
-    // const data = await FacilityService.listFacilities(page)
-
     const facilities = await Facility.query()
 
     return ctx.inertia.render('facility', { facilities, user: ctx.auth.user })
@@ -284,17 +279,15 @@ export default class ViewsController {
   }
 
   async room(ctx: HttpContext) {
-  const room = await Room.query()
+    const room = await Room.query()
 
+    return ctx.inertia.render('room', {
+      rooms: room,
+      user: ctx.auth.user,
+    })
+  }
 
-
-  return ctx.inertia.render('room', {
-    rooms: room,
-    user: ctx.auth.user
-  })
-}
-
-async roomForm(ctx: HttpContext) {
+  async roomForm(ctx: HttpContext) {
     return ctx.inertia.render('roomCreate', { user: ctx.auth.user })
   }
 
@@ -304,11 +297,7 @@ async roomForm(ctx: HttpContext) {
     return ctx.inertia.render('roomEdit', { user: ctx.auth.user, room })
   }
 
-async forgotPassword(ctx: HttpContext) {
+  async forgotPassword(ctx: HttpContext) {
     return ctx.inertia.render('auth/forgotPassword', { user: ctx.auth.user })
   }
-
 }
-
-
-

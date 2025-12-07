@@ -1,88 +1,106 @@
-import User from '#models/user'
 import UserService from '#services/user_service'
 import UsersValidator from '#validators/user'
+import { ApiErrorResponses } from '#validators/global_error'
 import type { HttpContext } from '@adonisjs/core/http'
-import { ApiOperation, ApiResponse } from '@foadonis/openapi/decorators'
+import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/openapi/decorators'
 
+const UsersCreate = UsersValidator.create
+const UsersUpdate = UsersValidator.update
+
+@ApiSecurity('BearerAuth')
+@ApiErrorResponses.Unauthorized
 export default class UsersController {
-  @ApiOperation({ summary: 'List All User' })
+  private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {
+    return ctx.response.ok({
+      success: true,
+      message,
+      ...extra,
+    })
+  }
+
+  @ApiOperation({ summary: 'Daftar Semua Pengguna' })
   @ApiResponse({
+    status: 200,
+    description: 'Daftar pengguna berhasil diperoleh',
     schema: {
       type: 'object',
       properties: {
-        success: { type: 'boolean', example: 'true' },
-        message: { type: 'string', example: 'Users succsesfuly optained' },
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Users successfully obtained' },
         data: { type: 'array', items: { $ref: '#/components/schemas/User' } },
       },
     },
   })
+  @ApiErrorResponses.InternalServerError
   async index(ctx: HttpContext) {
-    const page = await ctx.request.input('page', 1)
-    const data = await UserService.listUsers(page)
+    const data = await UserService.listUsers()
 
-    ctx.response.ok({
-      succses: true,
-      message: 'Users succsesfuly optained',
-      data,
-    })
+    return this.ok(ctx, 'Users successfully obtained', { data })
   }
 
-  @ApiOperation({ summary: 'Get User by ID' })
+  @ApiOperation({ summary: 'Ambil Pengguna berdasarkan ID' })
   @ApiResponse({
+    status: 200,
+    description: 'Pengguna berhasil ditemukan',
     schema: {
       type: 'object',
       properties: {
-        success: { type: 'boolean', example: 'true' },
+        success: { type: 'boolean', example: true },
         message: { type: 'string', example: 'User with id 1 has found' },
         data: { $ref: '#/components/schemas/User' },
       },
     },
   })
-  @ApiResponse({ type: User })
+  @ApiErrorResponses.NotFound
+  @ApiErrorResponses.InternalServerError
   async show(ctx: HttpContext) {
-    const id = await ctx.params.id
+    const id = ctx.params.id
     const data = await UserService.getUser(id)
 
-    ctx.response.ok({
-      succses: true,
-      message: `User with id ${id} has found`,
-      data,
-    })
+    return this.ok(ctx, `User with id ${id} has found`, { data })
   }
 
-  @ApiOperation({ summary: 'Destroy User' })
+  @ApiOperation({ summary: 'Hapus Pengguna' })
   @ApiResponse({
+    status: 200,
+    description: 'Akun pengguna berhasil dihapus',
     schema: {
       type: 'object',
       properties: {
-        success: { type: 'boolean', example: 'true' },
+        success: { type: 'boolean', example: true },
         message: { type: 'string', example: 'Account deleted' },
       },
     },
   })
+  @ApiErrorResponses.NotFound
+  @ApiErrorResponses.InternalServerError
   async destroy(ctx: HttpContext) {
     const id = ctx.params.id
 
     await UserService.deleteUser(id)
-    ctx.response.ok({
-      succses: true,
-      message: 'Account deleted',
-    })
+
+    return this.ok(ctx, 'Account deleted')
   }
 
-  @ApiOperation({ summary: 'Update User' })
+  @ApiOperation({ summary: 'Perbarui Pengguna' })
+  @ApiBody({ type: () => UsersUpdate })
   @ApiResponse({
+    status: 200,
+    description: 'Profil pengguna berhasil diperbarui',
     schema: {
       type: 'object',
       properties: {
-        success: { type: 'boolean', example: 'true' },
+        success: { type: 'boolean', example: true },
         message: { type: 'string', example: 'Profile updated' },
       },
     },
   })
+  @ApiErrorResponses.ValidationError
+  @ApiErrorResponses.NotFound
+  @ApiErrorResponses.InternalServerError
   async update(ctx: HttpContext) {
     const id = ctx.params.id
-    const body = await ctx.request.validateUsing(UsersValidator.update, {
+    const body = await ctx.request.validateUsing(UsersUpdate, {
       meta: {
         userRole: ctx.auth.user?.role || 'user',
       },
@@ -90,39 +108,35 @@ export default class UsersController {
 
     await UserService.updateUser(id, body)
 
-    ctx.response.ok({
-      succses: true,
-      message: 'Profile updated',
-    })
+    return this.ok(ctx, 'Profile updated')
   }
 
-  @ApiOperation({ summary: 'Create or Register New User' })
+  @ApiOperation({ summary: 'Buat atau Registrasi Pengguna Baru' })
+  @ApiBody({ type: () => UsersCreate })
   @ApiResponse({
+    status: 200,
+    description: 'Registrasi berhasil',
     schema: {
       type: 'object',
       properties: {
-        success: { type: 'boolean', example: 'true' },
-        message: { type: 'string', example: 'Registerd succsesfuly' },
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Registered successfully' },
         token: {
           type: 'string',
-          example:
-            'http://localhost:3333/docs#tag/auth/post/authlogin:~:text=oat_MQ.bE1JNlJsSFJQTnBIdUVVX3p5ZEFONnQySEgzcHA1VVFCQjNscm5KUjgzNzI0MDk5Mg',
+          description: 'Access token untuk pengguna yang baru terdaftar.',
+          example: 'oat_MQ.bE1JNlJsSFJQTnBIdUVVX3p5ZEFONnQySEgzcHA1VVFCQjNscm5KUjgzNzI0MDk5Mg',
         },
         data: { $ref: '#/components/schemas/User' },
       },
     },
   })
+  @ApiErrorResponses.ValidationError
+  @ApiErrorResponses.InternalServerError
   async store(ctx: HttpContext) {
-    const body = await ctx.request.validateUsing(UsersValidator.create, {
-      meta: {
-        userRole: ctx.auth.user?.role || 'user',
-      },
-    })
+    const body = await ctx.request.validateUsing(UsersCreate)
     const data = await UserService.createUser(body, ctx)
 
-    ctx.response.ok({
-      succses: true,
-      message: 'Registerd succsesfuly',
+    return this.ok(ctx, 'Access token untuk pengguna yang baru terdaftar', {
       token: data.token,
       data: data.user,
     })

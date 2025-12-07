@@ -1,0 +1,3171 @@
+{
+  "info": { "title": "Giventech API", "version": "1.0.0" },
+  "components": {
+    "securitySchemes": { "BearerAuth": { "type": "http", "scheme": "bearer" } },
+    "schemas": {
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "idUser": {
+            "type": "integer",
+            "example": 101,
+            "description": "ID pengguna yang membuat booking"
+          },
+          "idFacility": {
+            "type": "integer",
+            "example": 5,
+            "description": "ID fasilitas yang di-booking"
+          },
+          "idApprover": {
+            "type": "integer",
+            "example": 99,
+            "description": "ID pengguna yang menyetujui (Approver)",
+            "nullable": true
+          },
+          "idRoom": {
+            "type": "integer",
+            "example": 3,
+            "description": "ID ruangan yang di-booking (jika berlaku)"
+          },
+          "bookingDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-11-27",
+            "description": "Tanggal peminjaman"
+          },
+          "returnDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-11-30",
+            "description": "Tanggal pengembalian yang direncanakan",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Confirmed",
+              "Picked Up",
+              "Returned",
+              "Cancelled",
+              "Penalized",
+              "Done"
+            ],
+            "example": "Pending",
+            "description": "Status booking saat ini"
+          },
+          "purpose": {
+            "type": "string",
+            "example": "Rapat koordinasi tim Q4",
+            "description": "Tujuan peminjaman"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Membutuhkan proyektor dan kabel HDMI",
+            "description": "Catatan tambahan dari pemohon"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-20T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-27T14:30:00.000Z"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "description": "Pengguna yang membuat booking"
+          },
+          "approver": {
+            "$ref": "#/components/schemas/User",
+            "description": "Pengguna yang menyetujui booking",
+            "nullable": true
+          },
+          "fasilitas": {
+            "$ref": "#/components/schemas/Facility",
+            "description": "Fasilitas yang di-booking"
+          },
+          "rooms": {
+            "$ref": "#/components/schemas/Room",
+            "description": "Ruangan yang di-booking (jika ada)"
+          }
+        },
+        "required": [
+          "id",
+          "idUser",
+          "idFacility",
+          "bookingDate",
+          "status",
+          "purpose",
+          "createdAt",
+          "updatedAt",
+          "user",
+          "fasilitas",
+          "rooms"
+        ]
+      },
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "roomName": { "type": "string", "example": "Ruang Seminar 101" },
+          "longitude": {
+            "type": "number",
+            "format": "float",
+            "example": 106.8271,
+            "description": "Bujur lokasi ruangan"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "float",
+            "example": -6.1754,
+            "description": "Lintang lokasi ruangan"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-20T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-27T14:30:00.000Z"
+          }
+        },
+        "required": ["id", "roomName", "longitude", "latitude", "createdAt", "updatedAt"]
+      },
+      "Facility": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Ruang Rapat Utama B" },
+          "type": {
+            "type": "string",
+            "example": "Ruangan",
+            "description": "Tipe fasilitas (e.g., Ruangan, Kendaraan, Peralatan)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Available",
+              "Booked",
+              "Borrowed",
+              "Under Inspection",
+              "Maintenance",
+              "Damaged"
+            ],
+            "example": "Available",
+            "description": "Status ketersediaan fasilitas saat ini"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-20T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-27T14:30:00.000Z"
+          }
+        },
+        "required": ["id", "name", "type", "status", "createdAt", "updatedAt"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "username": { "type": "string", "example": "john.doe" },
+          "email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
+          "role": {
+            "type": "string",
+            "enum": ["admin", "user"],
+            "example": "user",
+            "description": "Peran pengguna dalam sistem"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-20T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-27T14:30:00.000Z"
+          }
+        },
+        "required": ["id", "username", "email", "role", "createdAt", "updatedAt"]
+      },
+      "UsersLogin": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "password": { "minimum": 6, "type": "string" }
+        },
+        "required": ["email", "password"]
+      },
+      "FacilityCreate": {
+        "type": "object",
+        "properties": {
+          "name": { "minimum": 1, "maximum": 100, "type": "string" },
+          "type": { "minimum": 1, "maximum": 100, "type": "string" },
+          "status": { "type": "string" }
+        },
+        "required": ["name", "type"]
+      },
+      "FacilityUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "minimum": 1, "maximum": 100, "type": "string" },
+          "type": { "minimum": 1, "maximum": 100, "type": "string" },
+          "status": { "type": "string" }
+        }
+      },
+      "BookingCreate": {
+        "type": "object",
+        "properties": {
+          "idUser": { "type": "number" },
+          "idRoom": { "type": "number" },
+          "idFacility": { "type": "number" },
+          "bookingDate": {
+            "pattern": "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/",
+            "type": "string"
+          },
+          "purpose": { "type": "string" },
+          "notes": { "type": "string" }
+        },
+        "required": ["idFacility", "purpose"]
+      },
+      "BookingUpdate": {
+        "type": "object",
+        "properties": {
+          "idFacility": { "type": "number" },
+          "idApprover": { "type": "number" },
+          "returnDate": {
+            "pattern": "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/",
+            "type": "string"
+          },
+          "status": { "type": "string" },
+          "idRoom": { "type": "number" },
+          "purpose": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      },
+      "UsersUpdate": {
+        "type": "object",
+        "properties": {
+          "username": { "maximum": 50, "type": "string" },
+          "email": { "type": "string" },
+          "password": { "minimum": 6, "type": "string" }
+        }
+      },
+      "UsersCreate": {
+        "type": "object",
+        "properties": {
+          "username": { "maximum": 50, "type": "string" },
+          "email": { "type": "string" },
+          "password": { "minimum": 6, "type": "string" }
+        },
+        "required": ["username", "email", "password"]
+      },
+      "RoomCreate": {
+        "type": "object",
+        "properties": {
+          "roomName": { "maximum": 100, "type": "string" },
+          "longitude": { "minimum": -180, "maximum": 180, "type": "number" },
+          "latitude": { "minimum": -90, "maximum": 90, "type": "number" }
+        },
+        "required": ["roomName", "longitude", "latitude"]
+      },
+      "RoomUpdate": {
+        "type": "object",
+        "properties": {
+          "roomName": { "maximum": 100, "type": "string" },
+          "longitude": { "minimum": -180, "maximum": 180, "type": "number" },
+          "latitude": { "minimum": -90, "maximum": 90, "type": "number" }
+        }
+      },
+      "UsersValidator.update": {
+        "type": "object",
+        "properties": {
+          "username": { "maximum": 50, "type": "string" },
+          "email": { "type": "string" },
+          "password": { "minimum": 6, "type": "string" }
+        }
+      },
+      "MeCreateBooking": {
+        "type": "object",
+        "properties": {
+          "idFacility": { "type": "number" },
+          "idRoom": { "type": "number" },
+          "bookingDate": {
+            "pattern": "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/",
+            "type": "string"
+          },
+          "purpose": { "type": "string" },
+          "notes": { "type": "string" }
+        },
+        "required": ["idFacility", "idRoom", "purpose"]
+      }
+    }
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Login User (API Token)",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Login berhasil" },
+                    "token": { "type": "string", "example": "api_token_here" },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 400 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Invalid user credentials." }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UsersLogin" } }
+          }
+        },
+        "parameters": [],
+        "security": []
+      }
+    },
+    "/oauth/google/token": {
+      "get": {
+        "summary": "Login dengan Google OAuth2 (API Token)",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Login berhasil" },
+                    "token": { "type": "string", "example": "api_token_here" },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": []
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Kirim Kode OTP untuk Lupa Password",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Kode OTP berhasil dikirim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Kode OTP telah dikirim ke email Anda."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "email": { "type": "string", "example": "example@example.com" } }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": []
+      },
+      "put": {
+        "summary": "Verifikasi Kode OTP dan Ganti Password",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Password berhasil diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Password Berhasil di Ganti!" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 400 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Invalid user credentials." }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "example@example.com" },
+                  "otp": { "type": "string", "example": "263177" },
+                  "newPassword": { "type": "string", "example": "password_baru" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": []
+      }
+    },
+    "/api/v1/facility": {
+      "get": {
+        "summary": "Daftar Semua Fasilitas",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Daftar fasilitas berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar fasilitas berhasil diperoleh"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Facility" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Buat Fasilitas Baru",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Fasilitas berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Fasilitas berhasil dibuat" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/FacilityCreate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/facility/{id}": {
+      "get": {
+        "summary": "Ambil Fasilitas berdasarkan ID",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Fasilitas berhasil ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "Fasilitas dengan ID 1 berhasil ditemukan"
+                    },
+                    "data": { "$ref": "#/components/schemas/Facility" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "put": {
+        "summary": "Perbarui Fasilitas",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Fasilitas berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Fasilitas berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/FacilityUpdate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Perbarui Fasilitas",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Fasilitas berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Fasilitas berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "minimum": 1, "maximum": 100, "type": "string" },
+                  "type": { "minimum": 1, "maximum": 100, "type": "string" },
+                  "status": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Fasilitas",
+        "tags": ["Fasilities"],
+        "responses": {
+          "200": {
+            "description": "Fasilitas berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Fasilitas berhasil dihapus" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/booking": {
+      "get": {
+        "summary": "Daftar Semua Booking",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Daftar booking berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Daftar booking berhasil diperoleh" },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Booking" } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Buat Booking Baru",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking berhasil dibuat" }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/BookingCreate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/booking/{id}": {
+      "get": {
+        "summary": "Ambil Booking berdasarkan ID",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking dengan ID 1 berhasil ditemukan"
+                    },
+                    "data": { "$ref": "#/components/schemas/Booking" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "put": {
+        "summary": "Perbarui Booking",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/BookingUpdate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Perbarui Booking",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "idFacility": { "type": "number" },
+                  "idApprover": { "type": "number" },
+                  "returnDate": {
+                    "pattern": "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/",
+                    "type": "string"
+                  },
+                  "status": { "type": "string" },
+                  "idRoom": { "type": "number" },
+                  "purpose": { "type": "string" },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Booking",
+        "tags": ["Bookings"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking berhasil dihapus" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/user": {
+      "get": {
+        "summary": "Daftar Semua Pengguna",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Daftar pengguna berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Users successfully obtained" },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Buat atau Registrasi Pengguna Baru",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Registrasi berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Registered successfully" },
+                    "token": {
+                      "type": "string",
+                      "description": "Access token untuk pengguna yang baru terdaftar.",
+                      "example": "oat_MQ.bE1JNlJsSFJQTnBIdUVVX3p5ZEFONnQySEgzcHA1VVFCQjNscm5KUjgzNzI0MDk5Mg"
+                    },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UsersCreate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/user/{id}": {
+      "get": {
+        "summary": "Ambil Pengguna berdasarkan ID",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Pengguna berhasil ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "User with id 1 has found" },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Pengguna",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Akun pengguna berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Account deleted" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "put": {
+        "summary": "Perbarui Pengguna",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Profil pengguna berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Profile updated" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UsersUpdate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Perbarui Pengguna",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Profil pengguna berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Profile updated" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "maximum": 50, "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "minimum": 6, "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/room": {
+      "get": {
+        "summary": "Daftar Semua Ruangan",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Daftar ruangan berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Daftar ruangan berhasil diperoleh" },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Room" } }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [], "false": [] }]
+      },
+      "post": {
+        "summary": "Buat Ruangan Baru",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Ruangan berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Ruangan berhasil dibuat" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RoomCreate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/room/{id}": {
+      "get": {
+        "summary": "Ambil Ruangan berdasarkan ID",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Ruangan berhasil ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "Ruangan dengan ID 1 berhasil ditemukan"
+                    },
+                    "data": { "$ref": "#/components/schemas/Room" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "put": {
+        "summary": "Perbarui Ruangan berdasarkan ID",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Ruangan berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Ruangan berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RoomUpdate" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "patch": {
+        "summary": "Perbarui Ruangan berdasarkan ID",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Ruangan berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Ruangan berhasil diperbarui" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roomName": { "maximum": 100, "type": "string" },
+                  "longitude": { "minimum": -180, "maximum": 180, "type": "number" },
+                  "latitude": { "minimum": -90, "maximum": 90, "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Ruangan berdasarkan ID",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Ruangan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Ruangan berhasil dihapus" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/room/mapData": {
+      "get": {
+        "summary": "Ambil Lokasi Booking Aktif",
+        "tags": ["Rooms"],
+        "responses": {
+          "200": {
+            "description": "Data lokasi ruangan dengan booking aktif berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "Data map ruangan berhasil diperoleh"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "number" },
+                          "room_name": { "type": "string" },
+                          "longitude": { "type": "number" },
+                          "latitude": { "type": "number" },
+                          "borrowed_facilities_count": { "type": "number" },
+                          "active_bookings": { "type": "array", "items": { "type": "object" } }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "Ambil Detail Pengguna Saat Ini (Me)",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Detail pengguna berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "This is ur Bio" },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Akun Pengguna Saat Ini",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Akun berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Account deleted" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Perbarui Profil Pengguna Saat Ini",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Profil berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Profile updated" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UsersValidator.update" }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/me/booking": {
+      "get": {
+        "summary": "Daftar Booking Saya",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Daftar booking berhasil diperoleh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "List of ur bookings" },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Booking" } }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Buat Booking Baru (Saya)",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking created" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MeCreateBooking" } }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/api/v1/me/booking/{id}": {
+      "get": {
+        "summary": "Ambil Booking Saya berdasarkan ID",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking with id 1 has found" },
+                    "data": { "$ref": "#/components/schemas/Booking" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "summary": "Perbarui Booking Saya",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking updated" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Kesalahan Validasi Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 422 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Kesalahan Validasi. Periksa input Anda."
+                    },
+                    "errors": { "type": "object", "example": { "email": ["Email wajib diisi."] } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "idFacility": { "type": "number" },
+                  "idApprover": { "type": "number" },
+                  "returnDate": {
+                    "pattern": "/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/",
+                    "type": "string"
+                  },
+                  "status": { "type": "string" },
+                  "idRoom": { "type": "number" },
+                  "purpose": { "type": "string" },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Hapus Booking Saya",
+        "tags": ["Us"],
+        "responses": {
+          "200": {
+            "description": "Booking berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Booking deleted" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak Terautentikasi (Unauthorized)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Sumber daya tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "Endpoint atau Sumber Daya Tidak Ditemukan."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan Server Internal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 500 },
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Terjadi Kesalahan Server Internal." }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    }
+  }
+}

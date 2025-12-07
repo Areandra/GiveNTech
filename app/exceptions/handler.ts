@@ -3,26 +3,27 @@ import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
-  /**
-   * In debug mode, the exception handler will display verbose errors
-   * with pretty printed stack traces.
-   */
   protected debug = !app.inProduction
-
-  /**
-   * Status pages are used to display a custom HTML pages for certain error
-   * codes. You might want to enable them in production only, but feel
-   * free to enable them in development as well.
-   */
   protected renderStatusPages = app.inProduction
 
-  /**
-   * Status pages is a collection of error code range and a callback
-   * to return the HTML contents to send as a response.
-   */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
     '404': (error, { inertia }) => inertia.render('errors/not_found', { error }),
     '500..599': (error, { inertia }) => inertia.render('errors/server_error', { error }),
+  }
+
+  /**
+   * Helper function to standardize JSON error response structure.
+   */
+  private formatJsonError(status: number, message: string, errors: any = null) {
+    const errorResponse: { status: number; success: boolean; message: string; errors?: any } = {
+      status,
+      success: false,
+      message,
+    }
+    if (errors) {
+      errorResponse.errors = errors
+    }
+    return errorResponse
   }
 
   /**
@@ -32,41 +33,68 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   async handle(error: any, ctx: HttpContext) {
     const isInertia = ctx.request.header('X-Inertia')
     const wantsJson = ctx.request.accepts(['json', 'html']) === 'json'
+    const status = error.status || 500
 
-    /**
-     * 1. If request is an Inertia request → return inertia error page
-     */
+    // --- Inertia Handling (Keep as is) ---
     if (isInertia) {
+      // ... (logic as before)
       return ctx.inertia.render('errors/server_error', {
         error: {
           message: error.message,
-          status: error.status || 500,
+          status: status,
         },
       })
     }
 
-    /**
-     * 2. If client does NOT want JSON (usually browser wants HTML)
-     * → fallback to status pages or default HTML error
-     */
+    // --- HTML/Status Page Handling (Keep as is) ---
     if (!wantsJson) {
       return super.handle(error, ctx)
     }
 
-    /**
-     * 3. Default fallback → return structured JSON error
-     */
-    return ctx.response.status(error.status || 500).send({
-      success: false,
-      ...error,
-    })
+    // ==========================================================
+    // 💡 FOCUSED JSON API ERROR HANDLING
+    // ==========================================================
+
+    // 1. Validation Error (status 422 - `E_VALIDATION_ERROR`)
+    if (error.code === 'E_VALIDATION_ERROR') {
+      return ctx.response
+        .status(422)
+        .send(this.formatJsonError(422, 'Kesalahan Validasi. Periksa input Anda.', error.messages))
+    }
+
+    // 2. Not Found Error (status 404)
+    if (status === 404) {
+      return ctx.response
+        .status(404)
+        .send(this.formatJsonError(404, 'Endpoint atau Sumber Daya Tidak Ditemukan.'))
+    }
+
+    // 3. Authentication & Authorization Errors (401, 403)
+    if (status === 401) {
+      return ctx.response
+        .status(401)
+        .send(this.formatJsonError(401, error.message || 'Tidak Terautentikasi (Unauthorized).'))
+    }
+
+    if (status === 403) {
+      return ctx.response
+        .status(403)
+        .send(this.formatJsonError(403, error.message || 'Dilarang Mengakses (Forbidden).'))
+    }
+
+    // 4. General/Internal Server Error (Default fallback)
+    return ctx.response
+      .status(status)
+      .send(
+        this.formatJsonError(
+          status,
+          this.debug ? error.message : 'Terjadi Kesalahan Server Internal.'
+        )
+      )
   }
 
   /**
-   * The method is used to report error to the logging service or
-   * the a third party error monitoring service.
-   *
-   * @note You should not attempt to send a response from this method.
+   * The method is used to report error... (Keep as is)
    */
   async report(error: unknown, ctx: HttpContext) {
     return super.report(error, ctx)

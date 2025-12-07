@@ -13,7 +13,7 @@ export default class AdminCommand extends BaseCommand {
   declare action: string
 
   @args.string({
-    description: 'User ID or Email (required for promote/password-reset)',
+    description: 'User ID or Email (required for promote/password-reset/destroy)',
     required: false,
   })
   declare identifier?: string
@@ -46,12 +46,12 @@ export default class AdminCommand extends BaseCommand {
         if (this.identifier) await this.destroyUser(this.identifier)
         else
           this.logger.error(
-            'The user ID or Email identifier is required for the password-reset action.'
+            'The user ID or Email identifier is required for the destroy action.' // Perbaikan pesan
           )
         break
       default:
         this.logger.error(
-          `Unknown action: ${this.action}. Use create, promote, password-reset, or list.`
+          `Unknown action: ${this.action}. Use create, promote, password-reset, list, or destroy.`
         )
     }
   }
@@ -62,7 +62,6 @@ export default class AdminCommand extends BaseCommand {
     const username = await this.prompt.ask('Username', {
       validate(value) {
         if (value.length < 3 || value.length > 50) {
-          // Corrected validation logic
           return 'Username must be between 3 and 50 characters.'
         }
         return true
@@ -78,10 +77,18 @@ export default class AdminCommand extends BaseCommand {
       },
     })
 
+    const phoneNumber = await this.prompt.ask('Phone Number (e.g., 62812xxxx)', {
+      validate(value) {
+        if (!/^\d{8,15}$/.test(value)) {
+          return 'Phone number must be between 8 and 15 digits.'
+        }
+        return true
+      },
+    })
+
     const password = await this.prompt.secure('Password', {
       validate(value) {
         if (value.length < 6) {
-          // Consistent with prompt message
           return 'Password must contain at least 6 characters.'
         }
         return true
@@ -100,12 +107,11 @@ export default class AdminCommand extends BaseCommand {
         username,
         email,
         password,
+        phoneNumber: phoneNumber,
         role: 'admin',
       })
 
-      this.logger.success(
-        `Admin created successfully: ${user.email}, continue to login to get acsess_token`
-      )
+      this.logger.success(`Admin created successfully: ${user.email}, phone: ${user.phoneNumber}.`)
     } catch (error) {
       this.logger.error('Failed to create admin.')
       this.logger.error(error.message)
@@ -113,9 +119,11 @@ export default class AdminCommand extends BaseCommand {
   }
 
   private async findUserByIdentifier(identifier: string) {
-    if (!Number.isNaN(Number(identifier))) {
+    // Cek apakah identifier adalah angka (ID)
+    if (!Number.isNaN(Number(identifier)) && Number.isInteger(Number(identifier))) {
       return User.find(identifier)
     }
+    // Cek apakah identifier adalah email
     return User.findBy('email', identifier)
   }
 
@@ -177,6 +185,7 @@ export default class AdminCommand extends BaseCommand {
         'ID': user.id,
         'Username': user.username,
         'Email': user.email,
+        'Phone Number': user.phoneNumber, // <--- Ditambahkan ke daftar
         'Created At': user.createdAt.toISODate(),
       }))
 
@@ -190,16 +199,17 @@ export default class AdminCommand extends BaseCommand {
   private async destroyUser(identifier: string) {
     try {
       const user = await this.findUserByIdentifier(identifier)
-      const userName = user?.username
+
       if (!user) {
         this.logger.error(`Cannot find User with ID/Email '${identifier}'.`)
         return
       }
 
-      user.delete()
-      this.logger.success(`User ${userName} successfully reset.`)
+      const userName = user.username
+      await user.delete() // Menggunakan await
+      this.logger.success(`User ${userName} successfully destroyed.`) // Perbaikan pesan
     } catch (error) {
-      this.logger.error('Failed to reset password.')
+      this.logger.error('Failed to destroy user.') // Perbaikan pesan
       this.logger.error(error.message)
     }
   }

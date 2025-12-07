@@ -22,6 +22,8 @@ vine.messagesProvider = new SimpleMessagesProvider({
   'idApprover.number': 'Approver ID must be a number',
   'idApprover.exists': 'Approver not found',
 
+  'purpose.required': 'Purpose ID cannot be empty',
+
   'roomNumber.maxLength': 'Room number is too long (max 50 characters)',
 
   'returnDate.regex': 'Invalid return date format. Use YYYY-MM-DDTHH:MM:SS format.',

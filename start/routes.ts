@@ -146,3 +146,6 @@ router
     }
   })
   .use(middleware.auth({ guards: ['web'] }))
+
+router.post('/auth/forgot-password', [AuthController, 'sendOtp'])
+router.put('/auth/forgot-password', [AuthController, 'verifyOtp'])

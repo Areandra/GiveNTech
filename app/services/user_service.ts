@@ -8,8 +8,8 @@ class UserService {
     return query
   }
 
-  public async listUsers(page = 1) {
-    return User.query().paginate(page)
+  public async listUsers() {
+    return User.query()
   }
 
   public async createUser(userData: Partial<User>, ctx: HttpContext) {
@@ -20,7 +20,9 @@ class UserService {
       expiresIn: '7 days',
     })
 
-    return { user, token }
+    await user.refresh()
+
+    return { user, token: token.toJSON().token }
   }
 
   public async updateUser(userId: number, updateData: Partial<User>) {
@@ -66,7 +68,7 @@ class UserService {
         expiresIn: '7 days',
       })
 
-      return { user, token }
+      return { user, token: token.toJSON().token }
     }
 
     return { user }

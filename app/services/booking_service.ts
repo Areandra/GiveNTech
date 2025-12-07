@@ -1,6 +1,7 @@
 import Booking from '#models/booking'
 import Facility from '#models/facility'
-import web_socket_service from './web_socket_service.js'
+import User from '#models/user'
+import sendMessege from './whatsapp_cloud_api_service.js'
 
 class BookingService {
   private bookingQuery(userId?: number) {
@@ -14,7 +15,7 @@ class BookingService {
   }
 
   public async getBookings(options: { userId?: number; page?: number } = {}) {
-    return this.bookingQuery(options.userId).paginate(options.page || 1)
+    return this.bookingQuery(options.userId)
   }
 
   public async createBooking(bookingData: any, userId?: number) {
@@ -28,14 +29,19 @@ class BookingService {
       status: bookingData.status || 'Pending',
     })
 
+    const admins = await User.query().where('role', 'admin')
+
+    const messagePromises = admins.map((admin) => {
+      return sendMessege(
+        admin.phoneNumber,
+        `Ada Booking baru nih min Cek Apps untuk melanjutkan konfirmasi`
+      )
+    })
+
+    await Promise.all(messagePromises)
+
     facility.status = 'Booked'
     await facility.save()
-
-    console.log('percobaan dilkukan')
-
-    web_socket_service.io?.emit('bookingReload')
-
-    console.log('apakah teradi')
 
     return booking
   }
@@ -43,6 +49,9 @@ class BookingService {
   public async updateBooking(bookingId: number, updateData: any, userId?: number) {
     const booking = await Booking.find(bookingId)
     if (!booking) throw new Error('Booking not found')
+    await booking?.load('user')
+    await booking?.load('fasilitas')
+    const user = await User.findOrFail(booking!.idUser)
 
     if (userId && booking.idUser !== userId) throw new Error('Unauthorized')
 
@@ -59,6 +68,10 @@ class BookingService {
       case 'Pending':
       case 'Confirmed':
         facility.status = 'Booked'
+        await sendMessege(
+          user.phoneNumber,
+          `Booking Kamu dengan nama fasilitas: ${booking.fasilitas.name} sudah di konfirmasi admin silahkan ambil barang anda (QRCode Tersedia di Halaman Booking anda)`
+        )
         break
       case 'Picked Up':
         facility.status = 'Borrowed'
@@ -67,6 +80,10 @@ class BookingService {
         facility.status = 'Under Inspection'
         break
       case 'Cancelled':
+        await sendMessege(
+          user.phoneNumber,
+          `Booking Kamu dengan nama fasilitas: ${booking.fasilitas.name} di tolak admin silahkan coba booking fasilitas lain`
+        )
       case 'Done':
         facility.status = 'Available'
         break
