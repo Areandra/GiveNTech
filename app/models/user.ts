@@ -23,12 +23,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   @ApiProperty({ type: 'string', example: 'john.doe' })
-  @Field(() => String)
+  @Field()
   declare username: string
 
   @column()
   @ApiProperty({ type: 'string', example: '628894577950' })
-  @Field(() => Number)
+  @Field()
   declare phoneNumber: string
 
   @column()
@@ -50,7 +50,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare role?: 'admin' | 'user'
 
   @column.dateTime({ autoCreate: true })
-  @Field()
+  @Field(() => DateTime)
   @ApiProperty({ type: 'string', format: 'date-time', example: '2025-11-20T10:00:00.000Z' })
   declare createdAt: DateTime
 
@@ -62,6 +62,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @hasMany(() => Booking, {
     foreignKey: 'idUser',
   })
+  @Field(() => [DateTime])
   // @ApiProperty({ type: () => [Booking], description: 'Daftar booking yang dibuat pengguna' })
   declare bookings: HasMany<typeof Booking>
 

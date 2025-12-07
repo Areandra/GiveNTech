@@ -55,5 +55,6 @@ export default class Facility extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Booking, { foreignKey: 'idFacility' })
+  @Field(() => [Booking])
   declare bookings: HasMany<typeof Booking>
 }

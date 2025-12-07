@@ -116,10 +116,12 @@ export default class Booking extends BaseModel {
   declare updatedAt?: DateTime
 
   @belongsTo(() => User, { foreignKey: 'idUser' })
+  @Field(() => User)
   @ApiProperty({ type: () => User, description: 'Pengguna yang membuat booking' })
   declare user: BelongsTo<typeof User>
 
   @belongsTo(() => User, { foreignKey: 'idApprover' })
+  @Field(() => User)
   @ApiProperty({
     type: () => User || null,
     description: 'Pengguna yang menyetujui booking',
@@ -128,10 +130,12 @@ export default class Booking extends BaseModel {
   declare approver?: BelongsTo<typeof User>
 
   @belongsTo(() => Facility, { foreignKey: 'idFacility' })
+  @Field(() => Facility)
   @ApiProperty({ type: () => Facility, description: 'Fasilitas yang di-booking' })
   declare fasilitas: BelongsTo<typeof Facility>
 
   @belongsTo(() => Room, { foreignKey: 'idRoom' })
+  @Field(() => Room)
   @ApiProperty({ type: () => Room, description: 'Ruangan yang di-booking (jika ada)' })
   declare rooms: BelongsTo<typeof Room>
 }

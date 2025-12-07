@@ -3,6 +3,66 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Booking {
+  approver: User!
+  bookingDate: LuxonDateTime!
+  createdAt: LuxonDateTime!
+  fasilitas: Facility!
+  id: ID!
+  idApprover: Int!
+  idFacility: Int!
+  idRoom: Int!
+  idUser: Int!
+  notes: String!
+  purpose: String!
+  returnDate: LuxonDateTime!
+  rooms: Room!
+  status: String!
+  updatedAt: LuxonDateTime!
+  user: User!
+}
+
+type Facility {
+  bookings: [Booking!]!
+  createdAt: LuxonDateTime!
+  id: ID!
+  name: String!
+  status: String!
+  type: String!
+  updatedAt: LuxonDateTime!
+}
+
+"""Luxon Date scalar type"""
+scalar LuxonDateTime
+
 type Query {
-  demo: String!
+  booking(id: ID!): Booking
+  bookings: [Booking!]!
+  facilities: [Facility!]!
+  facility(id: ID!): Facility
+  room(id: ID!): Room
+  rooms: [Room!]!
+  user(id: ID!): User
+  users: [User!]!
+}
+
+type Room {
+  bookings: [Booking!]!
+  createdAt: LuxonDateTime!
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  roomName: String!
+  updatedAt: LuxonDateTime!
+}
+
+type User {
+  bookings: [LuxonDateTime!]!
+  createdAt: LuxonDateTime!
+  email: String!
+  id: ID!
+  phoneNumber: String!
+  role: String!
+  updatedAt: LuxonDateTime
+  username: String!
 }
