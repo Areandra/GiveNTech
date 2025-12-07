@@ -10,8 +10,9 @@ import { ApiBody, ApiOperation, ApiResponse, ApiSecurity } from '@foadonis/opena
 const MeCreateBooking = BookingsValidator.createMe
 const BookingUpdate = BookingsValidator.update
 
-@ApiErrorResponses.Unauthorized
 @ApiSecurity('BearerAuth')
+@ApiErrorResponses.Forbidden
+@ApiErrorResponses.Unauthorized
 export default class UsController {
   private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {
     return ctx.response.ok({

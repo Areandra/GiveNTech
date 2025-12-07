@@ -10,6 +10,7 @@ const RoomCreate = RoomsValidator.create
 const RoomUpdate = RoomsValidator.update
 
 @ApiSecurity('BearerAuth')
+@ApiErrorResponses.Forbidden
 @ApiErrorResponses.Unauthorized
 export default class RoomsController {
   private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {

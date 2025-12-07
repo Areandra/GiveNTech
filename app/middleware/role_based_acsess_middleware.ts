@@ -7,12 +7,18 @@ export default class RoleBasedAcsessMiddleware {
     const wantsJson = ctx.request.accepts(['json', 'html']) === 'json'
 
     if (!user) {
-      return ctx.response.unauthorized({ message: 'Unauthorized' })
+      return ctx.response.unauthorized({
+        status: 403,
+        success: false,
+        message: 'Tidak Terautentikasi (Unauthorized).',
+      })
     }
 
     if (allowedRoles && !allowedRoles.includes(user.role as string)) {
       if (wantsJson) {
         return ctx.response.forbidden({
+          status: 403,
+          success: false,
           message: 'Dilarang Mengakses (Forbidden).',
         })
       } else {

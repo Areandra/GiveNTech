@@ -14,11 +14,12 @@ export default class GraphQlAuthMiddleware {
       await ctx.auth.authenticateUsing(['api', 'web'])
     } catch (error) {
       if (wantsJson)
-        ctx.response.unauthorized({
-          errors: [{ message: 'Authentication required for GraphQL endpoint' }],
+        return ctx.response.unauthorized({
+          status: 403,
+          success: false,
+          message: 'Tidak Terautentikasi (Unauthorized).',
         })
-      else ctx.response.redirect('/login')
-      return
+      return ctx.response.redirect('/login')
     }
 
     const roleBasedAcsess = new RoleBasedAcsessMiddleware()

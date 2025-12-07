@@ -24,8 +24,16 @@ export default class AuthMiddleware {
       await ctx.auth.authenticateUsing(options.guards)
       return next()
     } catch {
+      const wantsJson = ctx.request.accepts(['json', 'html']) === 'json'
       if (options.dinamis) return next()
-      ctx.response.redirect(this.redirectTo)
+
+      if (wantsJson)
+        return ctx.response.unauthorized({
+          status: 403,
+          success: false,
+          message: 'Tidak Terautentikasi (Unauthorized).',
+        })
+      return ctx.response.redirect(this.redirectTo)
     }
   }
 }

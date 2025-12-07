@@ -9,6 +9,8 @@ const BookingCreate = BookingsValidator.create
 const BookingUpdate = BookingsValidator.update
 
 @ApiSecurity('BearerAuth')
+@ApiErrorResponses.Forbidden
+@ApiErrorResponses.Unauthorized
 export default class BookingsController {
   private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {
     return ctx.response.ok({

@@ -9,6 +9,7 @@ const FacilityCreate = FacilityValidator.create
 const FacilityUpdate = FacilityValidator.update
 
 @ApiSecurity('BearerAuth')
+@ApiErrorResponses.Forbidden
 @ApiErrorResponses.Unauthorized
 export default class FasilitiesController {
   private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {

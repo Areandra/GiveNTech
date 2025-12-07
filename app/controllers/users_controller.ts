@@ -8,6 +8,7 @@ const UsersCreate = UsersValidator.create
 const UsersUpdate = UsersValidator.update
 
 @ApiSecurity('BearerAuth')
+@ApiErrorResponses.Forbidden
 @ApiErrorResponses.Unauthorized
 export default class UsersController {
   private ok(ctx: HttpContext, message: string, extra: Record<string, any> = {}) {
