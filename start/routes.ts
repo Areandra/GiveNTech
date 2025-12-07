@@ -134,6 +134,8 @@ router.get('/redirect/*', async ({ params, response }) => {
   return response.redirect(`/${path}`)
 })
 
+router.on('/forbidden').renderInertia('errors/forbidden', { redirectUrl: '/user/dashboard' })
+
 router
   .get('/', (ctx) => {
     const role = ctx.auth.user?.role

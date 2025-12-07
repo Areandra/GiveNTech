@@ -1,3 +1,4 @@
+import { Head } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
 
 const IMG =
@@ -14,6 +15,7 @@ export default function Forbidden({ redirectUrl }: any) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-800 p-6">
+      <Head title='403'/>
       <div className="text-center max-w-md">
         <img src={IMG} className="w-full h-auto rounded-lg mb-6 border" />
 

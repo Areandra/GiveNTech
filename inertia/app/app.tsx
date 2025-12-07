@@ -1,14 +1,12 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
 
-import axios from 'axios'
-
 import '../css/app.css'
 import { hydrateRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/react'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+const appName = import.meta.env.VITE_APP_NAME || 'GivenTech'
 
 createInertiaApp({
   progress: { color: '#5468FF' },

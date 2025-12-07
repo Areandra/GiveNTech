@@ -35,9 +35,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     const wantsJson = ctx.request.accepts(['json', 'html']) === 'json'
     const status = error.status || 500
 
-    // --- Inertia Handling (Keep as is) ---
     if (isInertia) {
-      // ... (logic as before)
       return ctx.inertia.render('errors/server_error', {
         error: {
           message: error.message,
@@ -46,30 +44,22 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
-    // --- HTML/Status Page Handling (Keep as is) ---
     if (!wantsJson) {
       return super.handle(error, ctx)
     }
 
-    // ==========================================================
-    // 💡 FOCUSED JSON API ERROR HANDLING
-    // ==========================================================
-
-    // 1. Validation Error (status 422 - `E_VALIDATION_ERROR`)
     if (error.code === 'E_VALIDATION_ERROR') {
       return ctx.response
         .status(422)
         .send(this.formatJsonError(422, 'Kesalahan Validasi. Periksa input Anda.', error.messages))
     }
 
-    // 2. Not Found Error (status 404)
     if (status === 404) {
       return ctx.response
         .status(404)
         .send(this.formatJsonError(404, 'Endpoint atau Sumber Daya Tidak Ditemukan.'))
     }
 
-    // 3. Authentication & Authorization Errors (401, 403)
     if (status === 401) {
       return ctx.response
         .status(401)
@@ -82,7 +72,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
         .send(this.formatJsonError(403, error.message || 'Dilarang Mengakses (Forbidden).'))
     }
 
-    // 4. General/Internal Server Error (Default fallback)
     return ctx.response
       .status(status)
       .send(
