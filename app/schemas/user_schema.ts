@@ -2,7 +2,7 @@ import vine from '@vinejs/vine'
 
 export const baseUserSchema = {
   username: vine.string().maxLength(50),
-  phoneNumber: vine.number().positive(),
+  phoneNumber: vine.string(),
   email: vine.string().email(),
   password: vine.string().minLength(6),
 }
