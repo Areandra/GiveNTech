@@ -3,7 +3,6 @@ import QRCodeToCanvas from '#components/QRCodeToCanvas'
 import { io, Socket } from 'socket.io-client'
 import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
-import { router } from '@inertiajs/react'
 import { QrCode, Loader2, CheckCircle, ArrowRightCircle, Building } from 'lucide-react'
 
 interface BookingData {
@@ -51,11 +50,8 @@ export default function QRCodePage(props: any) {
     const handleBookingUpdate = async (data: any) => {
       setStatus('Memperbarui data...')
       try {
-        const response = await axios.get(`/api/v1/booking/${data.idBooking}`, {
-          headers: {
-            Authorization:
-              'Bearer oat_MQ.XzJZRV8taFVTdXhScU1IY2NNTkQ4cHJDcl9Cd3diNkp6NVpvN0hvTDI5NDAwMjkxMDk',
-          },
+        const response = await axios.get(`/api/v1/me/booking/${data.idBooking}`, {
+          withCredentials: true,
         })
         setBooking(response.data.data)
         setStatus('Sukses! ✅')
@@ -85,7 +81,7 @@ export default function QRCodePage(props: any) {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer)
-            router.get('/redirect/home')
+            window.location.href = '/'
             return 0
           }
           return prev - 1
@@ -184,13 +180,13 @@ export default function QRCodePage(props: any) {
               </p>
             </div>
 
-            <button
-              onClick={() => router.get('/redirect/home')}
+            <a
+              href="/"
               className="mt-6 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
             >
               <ArrowRightCircle className="w-5 h-5" />
               Kembali ke Dashboard ({countdown}s)
-            </button>
+            </a>
           </section>
         )}
       </div>
