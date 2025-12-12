@@ -145,7 +145,7 @@ export default class AuthController {
     if (user?.role === 'user') {
       return ctx.response.redirect('/user/dashboard')
     }
-    return ctx.response.redirect('/dashboard')
+    return ctx.response.redirect('/login/phoneNumber')
   }
 
   @ApiOperation({ summary: 'Kirim Kode OTP untuk Lupa Password' })
