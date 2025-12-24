@@ -32,7 +32,7 @@ jobs:
 
       - run: npm install
 
-      - run: cp .env.testing .env
+      - run: cp .env.example .env
 
       - run: npm run lint
 
