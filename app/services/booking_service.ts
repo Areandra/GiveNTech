@@ -84,6 +84,8 @@ class BookingService {
           user.phoneNumber,
           `Booking Kamu dengan nama fasilitas: ${booking.fasilitas.name} di tolak admin silahkan coba booking fasilitas lain`
         )
+        facility.status = 'Available'
+        break
       case 'Done':
         facility.status = 'Available'
         break
