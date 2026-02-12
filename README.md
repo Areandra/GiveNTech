@@ -1128,7 +1128,7 @@ Dengan syarat:
 
 - 🔗 GitHub: [@Areandra](https://github.com/Areandra)
 - 💼 LinkedIn: [Muhammad Ariel](https://www.linkedin.com/in/muhammad-ariel-4899312a0/)
-- 📧 Email: arielproject25@gmail.com
+- 📧 Email: muhammadariel2207gmail.com
 
 ---
 
@@ -1136,7 +1136,7 @@ Dengan syarat:
 
 - **Report Bug**: [GitHub Issues](https://github.com/Areandra/GiveNTech/issues)
 - **Feature Request**: [GitHub Discussions](https://github.com/Areandra/GiveNTech/discussions)
-- **Email**: arielproject25@gmail.com
+- **Email**: muhammadariel2207gmail.com
 
 ---
 
