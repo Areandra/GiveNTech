@@ -22,6 +22,21 @@ Modern facility/item loan management information system for campuses, organizati
 
 ---
 
+![Node.js](https://img.shields.io/badge/Node.js-20+-green)
+![npm](https://img.shields.io/badge/npm-11.6+-blue)
+![AdonisJS](https://img.shields.io/badge/AdonisJS-6-%236E4AFF)
+![React](https://img.shields.io/badge/React-19-61DAFB)
+![InertiaJS](https://img.shields.io/badge/InertiaJS-React-purple)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-%233178C6)
+![Vite](https://img.shields.io/badge/Vite-6-yellow)
+![GraphQL](https://img.shields.io/badge/GraphQL-API-e10098)
+![Redis](https://img.shields.io/badge/Redis-6+-DC382D)
+![MySQL](https://img.shields.io/badge/MySQL-8+-4479A1)
+![QRCode](https://img.shields.io/badge/QR_Code-qrcode-green)
+![WhatsApp](https://img.shields.io/badge/WhatsApp-Cloud_API-25D366)
+![Leaflet](https://img.shields.io/badge/Maps-Leaflet-green)
+![License](https://img.shields.io/badge/license-MIT-red)
+
 ---
 
 ## 📖 Table of Contents
